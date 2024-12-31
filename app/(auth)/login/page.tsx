@@ -1,37 +1,43 @@
-import React from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+'use client';
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_AUTH_DOMAIN',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_STORAGE_BUCKET',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId: 'YOUR_APP_ID',
-};
+import { useState } from 'react';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '@/app/utils/firebase';
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+const LoginPage = () => {
+  const [error, setError] = useState<string | null>(null);
 
-const LoginPage: React.FC = () => {
   const handleGoogleSignIn = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      console.log('User signed in: ', user);
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+
+      // サーバーサイドにIDトークンを送信
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (response.ok) {
+        // 認証成功時の処理
+      } else {
+        setError('Authentication failed');
+      }
     } catch (error) {
-      console.error('Error signing in with Google: ', error);
+      setError('Sign-in error');
     }
   };
 
   return (
     <div>
       <h1>Login</h1>
-      <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+      <button type="button" onClick={handleGoogleSignIn}>
+        Sign in with Google
+      </button>
+      {error && <p>{error}</p>}
     </div>
   );
 };
