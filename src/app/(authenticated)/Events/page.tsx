@@ -1,13 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Container, Grid, Title } from '@mantine/core';
 import EventForm from '@/src/components/Event/EventForm';
 import EventList from '@/src/components/Event/EventList';
 import EventTimeline from '@/src/components/Event/EventTimeline';
+import { useAuth } from '@/src/hooks/useAuth';
 import { Event } from '@/src/types';
 
 const EventsPage = () => {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login'); // 未ログインの場合はログインページにリダイレクト
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   const [events, setEvents] = useState<Event[]>([]);
 
   const addEvent = (newEvent: Event) => {

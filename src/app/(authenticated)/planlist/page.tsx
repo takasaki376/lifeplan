@@ -1,6 +1,21 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useAuth } from '@/src/hooks/useAuth';
 
 const PlanListPage: FC = () => {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login'); // 未ログインの場合はログインページにリダイレクト
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   const plans = [
     { id: 1, name: 'Plan 1' },
     { id: 2, name: 'Plan 2' },

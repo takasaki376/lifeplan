@@ -1,9 +1,11 @@
+'use client';
+
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FamilyList } from '@/src/components/Family/FamilyList';
+import IncomeForm from '@/src/components/Income/incomeForm';
 import { useAuth } from '@/src/hooks/useAuth';
 
-export default function FamilyPage() {
+const IncomePage = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -18,9 +20,11 @@ export default function FamilyPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">家族構成の管理</h1>
-      <FamilyList />
+    <div className="p-4">
+      <h1 className="text-2xl font-bold">収入を入力してください</h1>
+      <IncomeForm />
     </div>
   );
-}
+};
+
+export default IncomePage;

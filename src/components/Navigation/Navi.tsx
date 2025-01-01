@@ -16,6 +16,10 @@ const items = [
   { href: '/PlanSearch', label: 'PlanSearch' },
   { href: '/Family', label: 'Family' },
   { href: '/Events', label: 'Events' },
+  { href: '/Income', label: 'Income' },
+  { href: '/Profile', label: 'Profile' },
+  { href: '/Settings', label: 'Settings' },
+  { href: '/Privacy', label: 'Privacy' },
 ] as const;
 
 /**
