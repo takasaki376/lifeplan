@@ -1,6 +1,6 @@
 // app/api/auth/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth } from '@/app/utils/firebaseAdmin';
+import { adminAuth } from '@/src/utils/firebaseAdmin';
 
 export async function POST(request: NextRequest) {
   const { idToken } = await request.json();

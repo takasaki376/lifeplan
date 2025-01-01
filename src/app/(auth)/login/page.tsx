@@ -1,11 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '@/app/utils/firebase';
+import { auth, googleProvider } from '@/src/utils/firebase';
 
 const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      router.push('/'); // ログイン済みの場合はリダイレクト
+    }
+  }, [router]);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -32,8 +42,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="w-full h-screen flex flex-col items-center justify-center ">
+      <h1 className="justify-items-center bg-red-300 border-black text-xl">Login</h1>
       <button type="button" onClick={handleGoogleSignIn}>
         Sign in with Google
       </button>
