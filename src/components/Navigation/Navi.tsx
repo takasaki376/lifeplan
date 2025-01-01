@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import cc from 'classcat';
 
 const items = [
-  { href: '/planlist', label: 'PlanList' },
+  { href: '/PlanList', label: 'PlanList' },
   { href: '/PlanDetail', label: 'PlanDetail' },
   { href: '/PlanEdit', label: 'PlanEdit' },
   { href: '/PlanCreate', label: 'PlanCreate' },
@@ -14,6 +14,8 @@ const items = [
   { href: '/PlanUpdate', label: 'PlanUpdate' },
   { href: '/PlanSelect', label: 'PlanSelect' },
   { href: '/PlanSearch', label: 'PlanSearch' },
+  { href: '/Family', label: 'Family' },
+  { href: '/Events', label: 'Events' },
 ] as const;
 
 /**
