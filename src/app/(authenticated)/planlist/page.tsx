@@ -1,5 +1,7 @@
+'use client';
+
 import { FC, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/src/hooks/useAuth';
 
 const PlanListPage: FC = () => {

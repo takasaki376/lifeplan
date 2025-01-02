@@ -18,6 +18,8 @@ const items = [
   { href: '/Events', label: 'Events' },
   { href: '/Income', label: 'Income' },
   { href: '/Expenses', label: 'Expenses' },
+  { href: '/Assets', label: 'Assets' },
+  { href: '/Liabilities', label: 'Liabilities' },
   { href: '/Profile', label: 'Profile' },
   { href: '/Settings', label: 'Settings' },
   { href: '/Privacy', label: 'Privacy' },

@@ -29,3 +29,12 @@ export type ApiExpense = {
   date: string; // サーバー側では ISO 8601 の文字列形式で扱う
   categories: ExpenseCategory;
 };
+
+export type Asset = {
+  id: string;
+  type: 'cash' | 'deposit' | 'real_estate' | 'stocks' | 'other';
+  details?: string;
+  amount: number;
+  createdAt: Date;
+  updatedAt: Date;
+};

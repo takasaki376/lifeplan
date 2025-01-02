@@ -3,6 +3,25 @@ import { Expense } from '@/src/types';
 import { adminDb } from '@/src/utils/firebaseAdmin';
 
 /**
+ * 支出データを取得する関数
+ * @param userId - ログインユーザーのID
+ */
+export const getExpense = async (userId: string) => {
+  try {
+    const expenseRef = adminDb.collection('users').doc(userId).collection('expenses');
+    const snapshot = await expenseRef.get();
+    const expense = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return expense;
+  } catch (error) {
+    console.error('支出データの取得中にエラーが発生しました:', error);
+    throw new Error('支出データの取得に失敗しました');
+  }
+};
+
+/**
  * 支出データを追加する関数
  * @param userId - ログインユーザーのID
  * @param newExpense - 追加するデータ
@@ -33,7 +52,7 @@ export const addExpense = async (userId: string, newExpense: Expense) => {
  */
 export const updateExpense = async (userId: string, id: string, updatedData: Expense) => {
   try {
-    const docRef = db.collection('users').doc(userId).collection('expenses').doc(id);
+    const docRef = adminDb.collection('users').doc(userId).collection('expenses').doc(id);
 
     const dataToUpdate: Record<string, any> = {};
     if (updatedData.categories !== undefined) {
