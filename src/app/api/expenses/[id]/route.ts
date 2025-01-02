@@ -20,8 +20,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const decodedToken = await adminAuth.verifyIdToken(idToken);
     const userId = decodedToken.uid;
 
-    const expenseData: Expense = { categories, date: new Date(date) };
     const { categories, date } = body;
+    const expenseData: Expense = { categories, date: new Date(date) };
 
     if (!categories && !date) {
       return NextResponse.json({ error: '更新するデータが指定されていません。' }, { status: 400 });
@@ -29,7 +29,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     await updateExpense(userId, id, expenseData);
 
-    return NextResponse.json({ id, ...dataToUpdate }, { status: 200 });
+    return NextResponse.json({ id, ...expenseData }, { status: 200 });
   } catch (error) {
     console.error('支出データの更新中にエラーが発生しました:', error);
     return NextResponse.json({ error: '支出データの更新に失敗しました。' }, { status: 500 });

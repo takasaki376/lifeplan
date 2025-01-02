@@ -30,7 +30,7 @@ export const ExpenseForm = () => {
   const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
 
   const [amounts, setAmounts] = useState<Expense['categories']>(
-    categories.reduce((acc, category) => ({ ...acc, [category]: 0 }), {})
+    categories.reduce((acc, category) => ({ ...acc, [category.code]: 0 }), {})
   );
   const [notification, setNotification] = useState(false);
   const { addExpenses } = useExpenses();
@@ -53,7 +53,7 @@ export const ExpenseForm = () => {
     setTimeout(() => setNotification(false), 3000);
 
     setDate(new Date());
-    setAmounts(categories.reduce((acc, category) => ({ ...acc, [category]: 0 }), {}));
+    setAmounts(categories.reduce((acc, category) => ({ ...acc, [category.code]: 0 }), {}));
   };
 
   const handleAmountChange = (category: string, value: string) => {

@@ -38,3 +38,14 @@ export type Asset = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type Debt = {
+  id?: string; // Firestore ドキュメントID（存在する場合のみ）
+  name: string; // 債務名（例: 住宅ローン）
+  balance: number; // 残高
+  interestRate: number; // 金利 (%)
+  dueDate: Date | null; // 返済期日 (ISO8601形式の文字列)
+  recordedDate: Date | null; // 登録時点の日付 (ISO8601形式の文字列)
+  createdAt?: string; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
+  updatedAt?: string; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
+};

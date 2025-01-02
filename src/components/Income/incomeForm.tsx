@@ -19,7 +19,6 @@ const IncomeForm = () => {
       (salaryIncome === undefined || salaryIncome < 0) &&
       (businessIncome === undefined || businessIncome < 0)
     ) {
-      // alert('少なくとも1つの収入を正しい金額で入力してください');
       setalartMes('少なくとも1つの収入を正しい金額で入力してください');
       return;
     }
