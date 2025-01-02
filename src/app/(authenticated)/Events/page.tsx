@@ -10,6 +10,7 @@ import { useAuth } from '@/src/hooks/useAuth';
 import { Event } from '@/src/types';
 
 const EventsPage = () => {
+  const [events, setEvents] = useState<Event[]>([]);
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -22,8 +23,6 @@ const EventsPage = () => {
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  const [events, setEvents] = useState<Event[]>([]);
 
   const addEvent = (newEvent: Event) => {
     setEvents([...events, newEvent]);

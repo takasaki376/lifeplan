@@ -54,14 +54,6 @@ const EventForm: FC<EventFormProps> = ({ onAddEvent }) => {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
-        {/* <TextInput
-          label="日付 *"
-          placeholder="例: 2025-01-01"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          mt="sm"
-          required
-        /> */}
         <MonthPickerInput
           label="年月"
           value={date}

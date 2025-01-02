@@ -2,10 +2,10 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FamilyList } from '@/src/components/Family/FamilyList';
+import { ExpenseForm } from '@/src/components/Expenses/ExpenseForm';
 import { useAuth } from '@/src/hooks/useAuth';
 
-export default function FamilyPage() {
+export default function ExpensesPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -20,9 +20,9 @@ export default function FamilyPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">家族構成の管理</h1>
-      <FamilyList />
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">支出の入力</h1>
+      <ExpenseForm />
     </div>
   );
 }
