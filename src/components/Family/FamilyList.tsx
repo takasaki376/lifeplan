@@ -8,7 +8,7 @@ import { familyAtom } from '@/src/store/atoms';
 import { FamilyCard } from './FamilyCard';
 import { FamilyForm } from './FamilyForm';
 
-export function FamilyList() {
+const FamilyList = () => {
   // const { family } = useFamily();
   const families = useAtomValue(familyAtom);
   console.log('family=', families);
@@ -22,4 +22,5 @@ export function FamilyList() {
       </div>
     </div>
   );
-}
+};
+export default FamilyList;

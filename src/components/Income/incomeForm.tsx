@@ -21,7 +21,7 @@ import { calculateNetIncome } from '@/src/utils/taxCalculations';
 
 const IncomeForm = () => {
   const [name, setName] = useState<string>('');
-  const [familyName, setFamilyName] = useState<string>('');
+  const [familyId, setFamilyId] = useState<string>('');
   const [income, setIncome] = useState<number | undefined>(undefined);
   const [startAge, setStartAge] = useState<number | undefined>(undefined);
   const [endAge, setEndAge] = useState<number | undefined>(undefined);
@@ -30,10 +30,17 @@ const IncomeForm = () => {
   const { addIncome } = useIncome();
   const { family } = useFamily();
   // 家族メンバーのデータをSelectコンポーネント用に変換
-  const familyOptions = family.map((member) => ({
-    value: member.name,
-    label: member.name,
-  }));
+  const familyOptions = family
+    .map((member) => {
+      if (member.id === undefined || member.id === null) {
+        return null;
+      }
+      return {
+        value: member.id,
+        label: member.name,
+      };
+    })
+    .filter((option): option is { value: string; label: string } => option !== null);
 
   const [result, setResult] = useState<CalculationResult | null>(null);
 
@@ -47,6 +54,8 @@ const IncomeForm = () => {
 
     // バリデーションチェック
     if (
+      !familyId ||
+      familyId === undefined ||
       !name ||
       income === undefined ||
       income < 0 ||
@@ -64,13 +73,14 @@ const IncomeForm = () => {
       return;
     }
 
-    await addIncome({ name, income, startAge, endAge });
+    await addIncome({ familyId, name, income, startAge, endAge });
 
     // フォームをリセット
+    setFamilyId('');
     setName('');
-    setIncome(undefined);
-    setStartAge(undefined);
-    setEndAge(undefined);
+    setIncome(0);
+    setStartAge(0);
+    setEndAge(0);
     setResult(null);
   };
 
@@ -81,8 +91,8 @@ const IncomeForm = () => {
           label="氏名"
           placeholder="家族メンバーを選択"
           data={familyOptions}
-          value={familyName}
-          onChange={(value) => setFamilyName(value || '')}
+          value={familyId}
+          onChange={(value) => setFamilyId(value || '')}
           required
         />
         <TextInput
@@ -146,6 +156,8 @@ const IncomeForm = () => {
               : 'bg-blue-500',
           ])}
           disabled={
+            !familyId ||
+            familyId === undefined ||
             !name ||
             income === undefined ||
             income < 0 ||

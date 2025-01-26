@@ -67,3 +67,19 @@ export const updateIncome = async (userId: string, id: string, updatedData: Inco
     throw new Error('収入データの更新に失敗しました');
   }
 };
+
+/**
+ * 収入データを削除する関数
+ * @param userId - ログインユーザーのID
+ * @param id - 削除対象のドキュメントID
+ */
+export const deleteIncome = async (userId: string, id: string) => {
+  try {
+    const docRef = adminDb.collection('users').doc(userId).collection('incomes').doc(id);
+    await docRef.delete();
+    console.log(`ドキュメント ${id} が正常に削除されました`);
+  } catch (error) {
+    console.error('収入データの削除中にエラーが発生しました:', error);
+    throw new Error('収入データの削除に失敗しました');
+  }
+};

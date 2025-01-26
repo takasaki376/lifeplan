@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import IncomeForm from '@/src/components/Income/incomeForm';
+import { IncomeList } from '@/src/components/Income/IncomeList';
 import { useAuth } from '@/src/hooks/useAuth';
 
 const IncomePage = () => {
@@ -21,8 +21,8 @@ const IncomePage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">収入を入力してください</h1>
-      <IncomeForm />
+      <h1 className="text-2xl font-bold">定期収入</h1>
+      <IncomeList />
     </div>
   );
 };

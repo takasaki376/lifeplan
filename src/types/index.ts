@@ -26,6 +26,7 @@ export type Event = {
 // 収入
 export type Income = {
   id?: string; // Firestore ドキュメント ID
+  familyId: string; // 家族情報との紐づけ
   name: string; //収入の名称
   income: number; //収入額
   startAge: number; //開始年齢

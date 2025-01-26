@@ -6,14 +6,8 @@ import { usePathname } from 'next/navigation';
 import cc from 'classcat';
 
 const items = [
+  { href: '/', label: 'トップ' },
   { href: '/PlanList', label: 'プラン一覧' },
-  { href: '/PlanDetail', label: 'PlanDetail' },
-  { href: '/PlanEdit', label: 'PlanEdit' },
-  { href: '/PlanCreate', label: 'PlanCreate' },
-  { href: '/PlanDelete', label: 'PlanDelete' },
-  { href: '/PlanUpdate', label: 'PlanUpdate' },
-  { href: '/PlanSelect', label: 'PlanSelect' },
-  { href: '/PlanSearch', label: 'PlanSearch' },
   { href: '/Family', label: '家族情報' },
   { href: '/Events', label: 'ライフイベント' },
   { href: '/Income', label: '収入' },
