@@ -36,9 +36,9 @@ export const calculateNetIncome = (
   const taxableIncome = Math.max(totalIncome - socialInsurance - basicDeduction, 0);
   const incomeTax = Math.round(calculateIncomeTax(taxableIncome));
 
-  // 住民税（総所得の10%）
+  // 住民税（課税所得の10%）
   const residentTaxRate = 0.1;
-  const residentTax = Math.round(totalIncome * residentTaxRate);
+  const residentTax = Math.round(taxableIncome * residentTaxRate);
 
   // 手取り額 = 総所得 - 社会保険料 - 所得税 - 住民税
   const netIncome = totalIncome - socialInsurance - incomeTax - residentTax;

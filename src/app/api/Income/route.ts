@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { addIncome, updateIncome } from '@/src/app/api/incomes';
+import { addIncome } from '@/src/app/api/incomes';
 import { Income } from '@/src/types';
 import { adminAuth } from '@/src/utils/firebaseAdmin';
 
@@ -18,37 +18,22 @@ export async function POST(req: NextRequest) {
     const decodedToken = await adminAuth.verifyIdToken(idToken);
     const userId = decodedToken.uid;
 
-    if (!Array.isArray(body)) {
+    const savedIncomes = [];
+
+    const { name, income, startAge, endAge } = body;
+    if (!userId || !name || !income || !startAge || !endAge) {
       return NextResponse.json(
-        { error: 'リクエストボディは配列形式である必要があります。' },
+        { error: 'name, income, startAge, endAgeのすべてを含む必要があります。' },
         { status: 400 }
       );
     }
 
-    const savedIncomes = [];
+    const incomeData: Income = { name, income, startAge, endAge };
 
-    for (const income of body) {
-      const { categories, recordedDate, id } = income;
-      if (!userId || !categories || !recordedDate) {
-        return NextResponse.json(
-          { error: 'userId, category, dateのすべてを含む必要があります。' },
-          { status: 400 }
-        );
-      }
+    // 登録処理
+    incomeData.id = await addIncome(userId, incomeData);
 
-      const incomeData: Income = { categories, recordedDate: new Date(recordedDate) };
-
-      if (id) {
-        // 更新処理
-        await updateIncome(userId, id, incomeData);
-        incomeData.id = id;
-      } else {
-        // 登録処理
-        incomeData.id = await addIncome(userId, incomeData);
-      }
-
-      savedIncomes.push(incomeData);
-    }
+    savedIncomes.push(incomeData);
 
     return NextResponse.json(savedIncomes, { status: 201 });
   } catch (error) {

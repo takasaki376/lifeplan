@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { auth } from '@/src/utils/firebase';
 import { Expense } from '../types';

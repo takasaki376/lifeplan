@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 // import { Asset } from '@/src/types';
 import { adminAuth, adminDb } from '@/src/utils/firebaseAdmin';
-import { getAssets } from './assets';
+import { getAssets } from '../assets';
+
+// import { getAssets } from '../assets';
 
 /**
  * GET: 資産データを取得

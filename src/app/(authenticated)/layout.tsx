@@ -1,7 +1,8 @@
 import '@/src/styles/globals.css';
 
-import { Provider } from 'jotai';
 import { Navigation } from '@/src/components/Navigation';
+
+// import { Providers } from '../providers';
 
 export const metadata = {
   title: 'Life-Plan',
@@ -10,13 +11,13 @@ export const metadata = {
 
 export default async function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Provider>
-      <div className="flex justify-center">
-        <div className=" bg-lightGray/20">
-          <Navigation />
-        </div>
-        <div className="min-h-screen w-full">{children}</div>
+    // <Providers>
+    <div className="flex justify-center">
+      <div className=" bg-lightGray/20">
+        <Navigation />
       </div>
-    </Provider>
+      <div className="min-h-screen w-full">{children}</div>
+    </div>
+    // </Providers>
   );
 }

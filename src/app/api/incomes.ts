@@ -10,11 +10,11 @@ export const getIncome = async (userId: string) => {
   try {
     const incomeRef = adminDb.collection('users').doc(userId).collection('incomes');
     const snapshot = await incomeRef.get();
-    const income = snapshot.docs.map((doc) => ({
+    const incomes = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-    return income;
+    return incomes;
   } catch (error) {
     console.error('収入データの取得中にエラーが発生しました:', error);
     throw new Error('収入データの取得に失敗しました');
@@ -32,7 +32,8 @@ export const addIncome = async (userId: string, newIncome: Income) => {
 
     const incomeData = {
       ...newIncome,
-      date: Timestamp.fromDate(newIncome.date),
+      createdAt: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
     };
 
     await docRef.set(incomeData);
@@ -54,15 +55,12 @@ export const updateIncome = async (userId: string, id: string, updatedData: Inco
   try {
     const docRef = adminDb.collection('users').doc(userId).collection('incomes').doc(id);
 
-    const dataToUpdate: Record<string, any> = {};
-    if (updatedData.categories !== undefined) {
-      dataToUpdate.categories = updatedData.categories;
-    }
-    if (updatedData.date !== undefined) {
-      dataToUpdate.date = Timestamp.fromDate(updatedData.date);
-    }
+    const incomeData = {
+      ...updatedData,
+      updatedAt: Timestamp.fromDate(new Date()),
+    };
 
-    await docRef.update(dataToUpdate);
+    await docRef.update(incomeData);
     console.log(`ドキュメント ${id} が正常に更新されました`);
   } catch (error) {
     console.error('収入データの更新中にエラーが発生しました:', error);

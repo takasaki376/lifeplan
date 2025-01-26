@@ -2,18 +2,29 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSetAtom } from 'jotai';
 import { Button, Container, Stack } from '@mantine/core';
-import { auth } from '@/src/utils/firebase';
+// import { auth } from '@/src/utils/firebase';
+import { useAuth } from '../hooks/useAuth';
+import { familyAtom, fetchData, incomeAtom } from '../store/atoms';
 
 export default function HomePage() {
   const router = useRouter();
+  const setFamilies = useSetAtom(familyAtom);
+  const setIncomes = useSetAtom(incomeAtom);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) {
-      router.push('/login'); // ログイン済みの場合はリダイレクト
+    if (!loading && !user) {
+      router.push('/login'); // 未ログインの場合はログインページにリダイレクト
     }
-  }, [router]);
+  }, [user, loading, router]);
+
+  useEffect(() => {
+    if (user && !loading) {
+      fetchData(setFamilies, setIncomes).catch(console.error);
+    }
+  }, [user, loading]);
 
   return (
     <Container>

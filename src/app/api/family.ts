@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase-admin/firestore';
-import { Family } from '@/src/types';
+import { ApiFamily, Family } from '@/src/types';
 import { adminDb } from '@/src/utils/firebaseAdmin';
 
 /**
@@ -10,11 +10,16 @@ export const getFamily = async (userId: string) => {
   try {
     const familyRef = adminDb.collection('users').doc(userId).collection('family');
     const snapshot = await familyRef.get();
-    const family = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return family;
+    const families = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        birthDate: data.birthDate ? data.birthDate.toDate() : null,
+      };
+    });
+
+    return families;
   } catch (error) {
     console.error('家族データの取得中にエラーが発生しました:', error);
     throw new Error('家族データの取得に失敗しました');
@@ -30,7 +35,7 @@ export const addFamily = async (userId: string, newFamily: Family) => {
   try {
     const docRef = adminDb.collection('users').doc(userId).collection('family').doc();
 
-    const familyData = {
+    const familyData: ApiFamily = {
       ...newFamily,
       birthDate: newFamily.birthDate ? Timestamp.fromDate(newFamily.birthDate) : '',
     };

@@ -3,66 +3,122 @@
 import { useState } from 'react';
 import { IconX } from '@tabler/icons-react';
 import classcat from 'classcat';
-import { Button, List, ListItem, Notification, rem, Space, TextInput, Title } from '@mantine/core';
+import {
+  Button,
+  List,
+  ListItem,
+  Notification,
+  rem,
+  Select,
+  Space,
+  TextInput,
+  Title,
+} from '@mantine/core';
+import { useFamily } from '@/src/hooks/useFamily';
+import { useIncome } from '@/src/hooks/useIncome';
 import { CalculationResult } from '@/src/types';
 import { calculateNetIncome } from '@/src/utils/taxCalculations';
 
 const IncomeForm = () => {
-  const [salaryIncome, setSalaryIncome] = useState<number | undefined>(undefined);
-  const [businessIncome, setBusinessIncome] = useState<number | undefined>(undefined);
+  const [name, setName] = useState<string>('');
+  const [familyName, setFamilyName] = useState<string>('');
+  const [income, setIncome] = useState<number | undefined>(undefined);
+  const [startAge, setStartAge] = useState<number | undefined>(undefined);
+  const [endAge, setEndAge] = useState<number | undefined>(undefined);
   const [alartMes, setalartMes] = useState('');
   const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
+  const { addIncome } = useIncome();
+  const { family } = useFamily();
+  // 家族メンバーのデータをSelectコンポーネント用に変換
+  const familyOptions = family.map((member) => ({
+    value: member.name,
+    label: member.name,
+  }));
 
   const [result, setResult] = useState<CalculationResult | null>(null);
 
   const handleBlur = () => {
-    const calculation = calculateNetIncome(salaryIncome, businessIncome);
-
+    const calculation = calculateNetIncome(income);
     setResult(calculation);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // バリデーションチェック
     if (
-      (salaryIncome === undefined || salaryIncome < 0) &&
-      (businessIncome === undefined || businessIncome < 0)
+      !name ||
+      income === undefined ||
+      income < 0 ||
+      startAge === undefined ||
+      startAge < 0 ||
+      endAge === undefined ||
+      endAge < 0
     ) {
-      setalartMes('少なくとも1つの収入を正しい金額で入力してください');
+      setalartMes('すべての項目を正しく入力してください');
       return;
     }
 
-    const incomeData = {
-      salaryIncome: salaryIncome || 0,
-      businessIncome: businessIncome || 0,
-    };
+    if (startAge > endAge) {
+      setalartMes('開始年齢は終了年齢より小さい値を入力してください');
+      return;
+    }
 
-    // Firebaseにデータを送信する処理を記述
-    console.log('収入データが登録されました: ', incomeData);
+    await addIncome({ name, income, startAge, endAge });
+
+    // フォームをリセット
+    setName('');
+    setIncome(undefined);
+    setStartAge(undefined);
+    setEndAge(undefined);
+    setResult(null);
   };
 
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-6">
+        <Select
+          label="氏名"
+          placeholder="家族メンバーを選択"
+          data={familyOptions}
+          value={familyName}
+          onChange={(value) => setFamilyName(value || '')}
+          required
+        />
         <TextInput
-          label="給与（円）"
+          label="名称"
+          value={name}
+          onChange={(e) => setName(e.currentTarget.value)}
+          placeholder="例: 給与"
+          required
+        />
+        <TextInput
+          label="収入額（円）"
           placeholder="例: 300000"
           type="number"
-          value={salaryIncome}
-          onChange={(e) => setSalaryIncome(Number(e.target.value))}
+          value={income}
+          onChange={(e) => setIncome(Number(e.target.value))}
           className="w-full"
           onBlur={handleBlur}
+          required
         />
         <TextInput
-          label="事業所得（円）"
-          placeholder="例: 150000"
+          label="開始年齢"
+          placeholder="例: 25"
           type="number"
-          value={businessIncome}
-          onChange={(e) => setBusinessIncome(Number(e.target.value))}
-          className="w-full"
-          onBlur={handleBlur}
+          value={startAge}
+          onChange={(e) => setStartAge(Number(e.target.value))}
+          required
         />
+        <TextInput
+          label="終了年齢"
+          placeholder="例: 60"
+          type="number"
+          value={endAge}
+          onChange={(e) => setEndAge(Number(e.target.value))}
+          required
+        />
+
         <Space h="md" />
         {result && (
           <>
@@ -81,13 +137,20 @@ const IncomeForm = () => {
           type="submit"
           className={classcat([
             'w-full',
-            salaryIncome === undefined && businessIncome === undefined
+            !name ||
+            income === undefined ||
+            income < 0 ||
+            startAge === undefined ||
+            endAge === undefined
               ? 'bg-gray-400'
               : 'bg-blue-500',
           ])}
           disabled={
-            (salaryIncome === undefined || salaryIncome < 0) &&
-            (businessIncome === undefined || businessIncome < 0)
+            !name ||
+            income === undefined ||
+            income < 0 ||
+            startAge === undefined ||
+            endAge === undefined
           }
         >
           保存

@@ -3,22 +3,22 @@ import { addDebt } from '@/src/app/api/debts';
 import { Debt } from '@/src/types';
 import { adminDb } from '@/src/utils/firebaseAdmin';
 
-// 債務の取得
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId');
-  if (!userId) {
-    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
-  }
+// // 債務の取得
+// export async function GET(req: Request) {
+//   const { searchParams } = new URL(req.url);
+//   const userId = searchParams.get('userId');
+//   if (!userId) {
+//     return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+//   }
 
-  try {
-    const snapshot = await adminDb.collection('debts').where('userId', '==', userId).get();
-    const debts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    return NextResponse.json(debts);
-  } catch (error) {
-    return NextResponse.json({ error: '債務データの取得に失敗しました' }, { status: 500 });
-  }
-}
+//   try {
+//     const snapshot = await adminDb.collection('debts').where('userId', '==', userId).get();
+//     const debts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+//     return NextResponse.json(debts);
+//   } catch (error) {
+//     return NextResponse.json({ error: '債務データの取得に失敗しました' }, { status: 500 });
+//   }
+// }
 
 // 債務の追加
 export async function POST(req: Request) {
