@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-// import { Debt } from '@/src/types';
+import { addDebt } from '@/src/app/api/debts';
+import { Debt } from '@/src/types';
 import { adminDb } from '@/src/utils/firebaseAdmin';
 
 // 債務の取得
@@ -22,24 +23,26 @@ export async function GET(req: Request) {
 // 債務の追加
 export async function POST(req: Request) {
   const body = await req.json();
-  const { userId, name, balance, interestRate, monthlyPayment, finalPaymentDate, notes } = body;
+  const { userId, name, balance, interestRate, monthlyPayment, dueDate, recordedDate } = body;
 
   if (!userId || !name || balance === undefined) {
     return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
   }
 
   try {
-    const newDebt = {
-      userId,
+    const newDebt: Debt = {
       name,
       balance,
       interestRate,
       monthlyPayment,
-      finalPaymentDate,
-      notes,
+      dueDate,
+      recordedDate,
     };
-    const docRef = await adminDb.collection('debts').add(newDebt);
-    return NextResponse.json({ id: docRef.id, ...newDebt });
+
+    // 登録処理
+    newDebt.id = await addDebt(userId, newDebt);
+
+    return NextResponse.json({ newDebt });
   } catch (error) {
     return NextResponse.json({ error: '債務データの登録に失敗しました。' }, { status: 500 });
   }

@@ -32,7 +32,7 @@ export const addExpense = async (userId: string, newExpense: Expense) => {
 
     const expenseData = {
       ...newExpense,
-      date: Timestamp.fromDate(newExpense.date),
+      recordedDate: Timestamp.fromDate(newExpense.recordedDate),
     };
 
     await docRef.set(expenseData);
@@ -58,8 +58,8 @@ export const updateExpense = async (userId: string, id: string, updatedData: Exp
     if (updatedData.categories !== undefined) {
       dataToUpdate.categories = updatedData.categories;
     }
-    if (updatedData.date !== undefined) {
-      dataToUpdate.date = Timestamp.fromDate(updatedData.date);
+    if (updatedData.recordedDate !== undefined) {
+      dataToUpdate.date = Timestamp.fromDate(updatedData.recordedDate);
     }
 
     await docRef.update(dataToUpdate);

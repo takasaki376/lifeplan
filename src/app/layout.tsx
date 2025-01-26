@@ -11,7 +11,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: any }) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html lang="ja" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
         <link rel="shortcut icon" href="/favicon.svg" />

@@ -44,7 +44,7 @@ export const ExpenseForm = () => {
     }
 
     const newExpense: Expense = {
-      date,
+      recordedDate: date,
       categories: Object.fromEntries(Object.entries(amounts).filter(([_, value]) => value !== 0)),
     };
 

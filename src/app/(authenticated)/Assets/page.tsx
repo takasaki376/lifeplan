@@ -27,7 +27,7 @@ export default function AssetPage() {
     if (isEditing) {
       // 編集モード: updateAsset を呼び出し
       if (editingAsset) {
-        await updateAsset(editingAsset.id, values);
+        await updateAsset(editingAsset.id || '', values);
       }
       setIsEditing(false);
       setEditingAsset(null);

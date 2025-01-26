@@ -2,7 +2,8 @@
 
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { Button, TextInput } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
+import { Button, Notification, rem, TextInput } from '@mantine/core';
 import { DateInput, DateInputProps, MonthPickerInput } from '@mantine/dates';
 import { useDebt } from '@/src/hooks/useDebts';
 import { Debt } from '@/src/types';
@@ -16,11 +17,14 @@ const dateParser: DateInputProps['dateParser'] = (input) => {
 };
 
 export default function DebtForm() {
+  // const [date, setDate] = useState<Date | null>(new Date());
+  const [alartMes, setalartMes] = useState('');
   const [form, setForm] = useState<Debt>({
     name: '',
     balance: 0,
     interestRate: 0,
     dueDate: null,
+    monthlyPayment: 0,
     recordedDate: new Date(),
   });
   const { addDebt } = useDebt();
@@ -28,16 +32,33 @@ export default function DebtForm() {
   const handleChange = (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
+  const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
 
   const handleSubmit = async () => {
+    if (!form.recordedDate) {
+      setalartMes('日付を選択してください。');
+      return;
+    }
+    if (!form.dueDate) {
+      setalartMes('返済期日を選択してください。');
+      return;
+    }
+
+    const newDebt: Debt = {
+      ...form,
+      dueDate: form.dueDate as Date,
+      recordedDate: form.recordedDate as Date,
+    };
+
     try {
-      await addDebt(form);
+      await addDebt(newDebt);
       setForm({
         name: '',
         balance: 0,
         interestRate: 0,
         dueDate: null,
-        recordedDate: new Date(),
+        monthlyPayment: 0,
+        recordedDate: form.recordedDate,
       });
     } catch (error) {
       console.error(error);
@@ -75,6 +96,13 @@ export default function DebtForm() {
           placeholder="例: 2000-01"
           valueFormat="YYYY-MM"
         />
+        <TextInput
+          label="月額返済金額"
+          type="number"
+          value={form.balance}
+          onChange={(e) => handleChange('monthlyPayment', Number(e.target.value))}
+          required
+        />
         <DateInput
           label="登録時点の日付"
           value={form.recordedDate}
@@ -86,6 +114,11 @@ export default function DebtForm() {
 
         <Button onClick={handleSubmit}>追加</Button>
       </div>
+      {alartMes && (
+        <Notification icon={xIcon} color="red" title="入力エラー!" onClose={() => setalartMes('')}>
+          {alartMes}
+        </Notification>
+      )}
     </div>
   );
 }

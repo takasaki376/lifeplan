@@ -3,12 +3,11 @@
 import '@mantine/dates/styles.css';
 
 import { Button, Card, Text } from '@mantine/core';
-import { FamilyMember } from '@/src/types';
+import { useFamily } from '@/src/hooks/useFamily';
+import { Family } from '@/src/types';
 
 type FamilyCardProps = {
-  member: FamilyMember;
-  onUpdate: (member: FamilyMember) => void;
-  onRemove: (id: string) => void;
+  member: Family;
 };
 
 function calculateAge(birthDate: Date | null): number {
@@ -25,8 +24,9 @@ function calculateAge(birthDate: Date | null): number {
   return age;
 }
 
-export function FamilyCard({ member, onUpdate, onRemove }: FamilyCardProps) {
+export function FamilyCard({ member }: FamilyCardProps) {
   const age = calculateAge(member.birthDate);
+  const { updateFamily, deleteFamily } = useFamily();
 
   return (
     <Card shadow="sm" padding="lg" className="mb-4">
@@ -37,10 +37,20 @@ export function FamilyCard({ member, onUpdate, onRemove }: FamilyCardProps) {
       <Text>年齢: {age}歳</Text>
       <Text>関係: {member.relation}</Text>
       <div className="flex justify-between mt-4">
-        <Button onClick={() => onUpdate(member)} variant="outline" size="xs">
+        <Button
+          onClick={() =>
+            updateFamily(member.id || '', {
+              name: member.name,
+              birthDate: member.birthDate,
+              relation: member.relation,
+            })
+          }
+          variant="outline"
+          size="xs"
+        >
           編集
         </Button>
-        <Button onClick={() => onRemove(member.id || '')} color="red" size="xs">
+        <Button onClick={() => deleteFamily(member.id || '')} color="red" size="xs">
           削除
         </Button>
       </div>

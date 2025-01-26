@@ -39,7 +39,7 @@ export const useDebt = () => {
   //       setDebt(data);
   //     } catch (err) {
   //       console.error(err);
-  //       setError('資産データの取得に失敗しました');
+  //       setError('債務データの取得に失敗しました');
   //     } finally {
   //       setLoading(false);
   //     }
@@ -49,8 +49,8 @@ export const useDebt = () => {
   // }, [idToken]);
 
   /**
-   * 資産データをAPI経由で登録する関数
-   * @param newDebt - 登録する資産データの配列
+   * 債務データをAPI経由で登録する関数
+   * @param newDebt - 登録する債務データの配列
    */
   const addDebt = async (newDebt: Debt) => {
     try {
@@ -61,7 +61,7 @@ export const useDebt = () => {
       });
 
       if (!response.ok) {
-        throw new Error('資産データの登録に失敗しました');
+        throw new Error('債務データの登録に失敗しました');
       }
 
       const savedDebt = await response.json();
@@ -72,7 +72,7 @@ export const useDebt = () => {
     }
   };
 
-  // 資産を更新
+  // 債務を更新
   const updateDebt = async (id: string, updatedFields: Partial<Debt>) => {
     setLoading(true);
     try {
@@ -97,13 +97,13 @@ export const useDebt = () => {
       setDebt(updatedDebts);
     } catch (err) {
       console.error(err);
-      setError('資産の更新に失敗しました');
+      setError('債務の更新に失敗しました');
     } finally {
       setLoading(false);
     }
   };
 
-  // 資産を削除
+  // 債務を削除
   const deleteDebt = async (id: string) => {
     setLoading(true);
     try {
@@ -126,7 +126,7 @@ export const useDebt = () => {
       setDebt(updatedDebts);
     } catch (err) {
       console.error(err);
-      setError('資産の削除に失敗しました');
+      setError('債務の削除に失敗しました');
     } finally {
       setLoading(false);
     }

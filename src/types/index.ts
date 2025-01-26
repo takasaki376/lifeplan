@@ -1,6 +1,6 @@
 export type colorScheme = 'light' | 'dark' | 'auto';
 
-export type FamilyMember = {
+export type Family = {
   id?: string | null; // FirestoreのドキュメントID（更新時に使用）
   name: string;
   birthDate: Date | null; // 生年月日 (YYYY-MM-DD形式)
@@ -18,20 +18,24 @@ export type ExpenseCategory = {
   [category: string]: number; // カテゴリ名をキーにした金額
 };
 
+// ---------------------
+// 支出
 export type Expense = {
   id?: string; // Firestore ドキュメント ID
-  date: Date; // 支出の日付
+  recordedDate: Date; // 支出の日付
   categories: ExpenseCategory; // カテゴリごとの支出金額
 };
 
 export type ApiExpense = {
   id?: string;
-  date: string; // サーバー側では ISO 8601 の文字列形式で扱う
+  recordedDate: string; // サーバー側では ISO 8601 の文字列形式で扱う
   categories: ExpenseCategory;
 };
 
+// ---------------------
+// 資産
 export type Asset = {
-  id: string;
+  id?: string;
   type: 'cash' | 'deposit' | 'real_estate' | 'stocks' | 'other';
   details?: string;
   amount: number;
@@ -39,13 +43,36 @@ export type Asset = {
   updatedAt: Date;
 };
 
+// ---------------------
+// 債務
 export type Debt = {
   id?: string; // Firestore ドキュメントID（存在する場合のみ）
   name: string; // 債務名（例: 住宅ローン）
   balance: number; // 残高
   interestRate: number; // 金利 (%)
   dueDate: Date | null; // 返済期日 (ISO8601形式の文字列)
-  recordedDate: Date | null; // 登録時点の日付 (ISO8601形式の文字列)
+  monthlyPayment: number; // 月額返済金額
+  recordedDate: Date; // 登録時点の日付 (ISO8601形式の文字列)
   createdAt?: string; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
   updatedAt?: string; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
+};
+
+export type ApiDebt = {
+  id?: string; // Firestore ドキュメントID（存在する場合のみ）
+  name: string; // 債務名（例: 住宅ローン）
+  balance: number; // 残高
+  interestRate: number; // 金利 (%)
+  dueDate: string; // 返済期日 (ISO8601形式の文字列)
+  monthlyPayment: number; // 月額返済金額
+  recordedDate: string; // 登録時点の日付 (ISO8601形式の文字列)
+  createdAt?: string; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
+  updatedAt?: string; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
+};
+
+export type CalculationResult = {
+  totalIncome: number; // 総所得
+  socialInsurance: number; // 社会保険料
+  incomeTax: number; // 所得税
+  residentTax: number; // 住民税
+  netIncome: number; // 手取り額
 };

@@ -9,15 +9,11 @@ export const metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja">
-      <body>
-        <div className="flex justify-center">
-          <div className=" bg-lightGray/20">
-            <Navigation />
-          </div>
-          <div className="min-h-screen w-full">{children}</div>
-        </div>
-      </body>
-    </html>
+    <div className="flex justify-center">
+      <div className=" bg-lightGray/20">
+        <Navigation />
+      </div>
+      <div className="min-h-screen w-full">{children}</div>
+    </div>
   );
 }

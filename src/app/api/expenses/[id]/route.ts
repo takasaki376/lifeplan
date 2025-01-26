@@ -6,8 +6,8 @@ import { adminAuth } from '@/src/utils/firebaseAdmin';
 /**
  * PATCH: 既存の支出データを更新
  */
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = params.id;
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
 
   try {
     const body = await req.json();
@@ -21,7 +21,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const userId = decodedToken.uid;
 
     const { categories, date } = body;
-    const expenseData: Expense = { categories, date: new Date(date) };
+    const expenseData: Expense = { categories, recordedDate: new Date(date) };
 
     if (!categories && !date) {
       return NextResponse.json({ error: '更新するデータが指定されていません。' }, { status: 400 });

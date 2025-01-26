@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { addExpense, updateExpense } from '@/src/app/api/expenses';
-import { Expense } from '@/src/types';
+import { addIncome, updateIncome } from '@/src/app/api/incomes';
+import { Income } from '@/src/types';
 import { adminAuth } from '@/src/utils/firebaseAdmin';
 
 /**
- * POST: 新しい支出データを登録
+ * POST: 新しい収入データを登録
  */
 export async function POST(req: NextRequest) {
   try {
@@ -25,10 +25,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const savedExpenses = [];
+    const savedIncomes = [];
 
-    for (const expense of body) {
-      const { categories, recordedDate, id } = expense;
+    for (const income of body) {
+      const { categories, recordedDate, id } = income;
       if (!userId || !categories || !recordedDate) {
         return NextResponse.json(
           { error: 'userId, category, dateのすべてを含む必要があります。' },
@@ -36,23 +36,23 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const expenseData: Expense = { categories, recordedDate: new Date(recordedDate) };
+      const incomeData: Income = { categories, recordedDate: new Date(recordedDate) };
 
       if (id) {
         // 更新処理
-        await updateExpense(userId, id, expenseData);
-        expenseData.id = id;
+        await updateIncome(userId, id, incomeData);
+        incomeData.id = id;
       } else {
         // 登録処理
-        expenseData.id = await addExpense(userId, expenseData);
+        incomeData.id = await addIncome(userId, incomeData);
       }
 
-      savedExpenses.push(expenseData);
+      savedIncomes.push(incomeData);
     }
 
-    return NextResponse.json(savedExpenses, { status: 201 });
+    return NextResponse.json(savedIncomes, { status: 201 });
   } catch (error) {
-    console.error('支出データの登録中にエラーが発生しました:', error);
-    return NextResponse.json({ error: '支出データの登録に失敗しました。' }, { status: 500 });
+    console.error('収入データの登録中にエラーが発生しました:', error);
+    return NextResponse.json({ error: '収入データの登録に失敗しました。' }, { status: 500 });
   }
 }
