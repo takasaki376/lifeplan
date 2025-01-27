@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Alert, Loader } from '@mantine/core';
 import AssetForm from '@/src/components/assets/AssetForm';
 import AssetList from '@/src/components/assets/AssetList';
+import { Header } from '@/src/components/common/Header';
 import { useAsset } from '@/src/hooks/useAsset';
 import { Asset } from '@/src/types';
 
@@ -38,8 +39,8 @@ export default function AssetPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">資産管理</h1>
+    <div className="container mx-auto p-4 flex flex-col">
+      <Header title="資産管理" btnTitle="資産追加" />
       {loading && (
         <div className="flex justify-center mb-4">
           <Loader />

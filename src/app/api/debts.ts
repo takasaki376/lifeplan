@@ -8,13 +8,8 @@ import { adminDb } from '@/src/utils/firebaseAdmin';
  */
 export const getDebt = async (userId: string) => {
   try {
-    const snapshot = await adminDb
-      .collection('users')
-      .doc(userId)
-      .collection('debts')
-      .where('userId', '==', userId)
-      .get();
-
+    const expenseRef = adminDb.collection('users').doc(userId).collection('debts');
+    const snapshot = await expenseRef.get();
     const debt = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -73,5 +68,22 @@ export const updateDebt = async (userId: string, id: string, updatedData: Debt) 
   } catch (error) {
     console.error('債務データの更新中にエラーが発生しました:', error);
     throw new Error('債務データの更新に失敗しました');
+  }
+};
+
+/**
+ * 債務データを削除する関数
+ * @param userId - ログインユーザーのID
+ * @param id - 削除するデータのID
+ */
+export const deleteDebt = async (userId: string, id: string) => {
+  try {
+    const docRef = adminDb.collection('users').doc(userId).collection('debts').doc(id);
+
+    await docRef.delete();
+    console.log(`ドキュメント ${id} が正常に削除されました`);
+  } catch (error) {
+    console.error('債務データの削除中にエラーが発生しました:', error);
+    throw new Error('債務データの削除に失敗しました');
   }
 };

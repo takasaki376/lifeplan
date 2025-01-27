@@ -6,12 +6,14 @@ import { useSetAtom } from 'jotai';
 import { Button, Container, Stack } from '@mantine/core';
 // import { auth } from '@/src/utils/firebase';
 import { useAuth } from '../hooks/useAuth';
-import { familyAtom, fetchData, incomeAtom } from '../store/atoms';
+import { debtsAtom, expensesAtom, familyAtom, fetchData, incomeAtom } from '../store/atoms';
 
 export default function HomePage() {
   const router = useRouter();
   const setFamilies = useSetAtom(familyAtom);
   const setIncomes = useSetAtom(incomeAtom);
+  const setExpenses = useSetAtom(expensesAtom);
+  const setDebts = useSetAtom(debtsAtom);
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (user && !loading) {
-      fetchData(setFamilies, setIncomes).catch(console.error);
+      fetchData(setFamilies, setIncomes, setExpenses, setDebts).catch(console.error);
     }
   }, [user, loading]);
 

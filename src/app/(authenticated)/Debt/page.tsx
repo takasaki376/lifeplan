@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Container, Title } from '@mantine/core';
+import { Header } from '@/src/components/common/Header';
 import DebtForm from '@/src/components/debt/DebtForm';
 import DebtList from '@/src/components/debt/DebtList';
 import { useAuth } from '@/src/hooks/useAuth';
@@ -22,12 +22,10 @@ export default function DebtsPage() {
   }
 
   return (
-    <Container size="md">
-      <Title order={1} mb="lg">
-        債務管理
-      </Title>
+    <div className="container mx-auto p-4 flex flex-col">
+      <Header title="債権管理" btnTitle="債務追加" />
       <DebtForm />
       <DebtList />
-    </Container>
+    </div>
   );
 }

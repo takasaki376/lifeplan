@@ -1,13 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Drawer } from '@mantine/core';
+import { Header } from '@/src/components/common/Header';
+import { IncomeForm } from '@/src/components/Income/IncomeForm';
 import { IncomeList } from '@/src/components/Income/IncomeList';
 import { useAuth } from '@/src/hooks/useAuth';
 
 const IncomePage = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -20,9 +24,14 @@ const IncomePage = () => {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">定期収入</h1>
+    <div className="container mx-auto p-4 flex flex-col">
+      <Header title="定期収入" btnTitle="収入追加" onBtnClick={() => setIsFormOpen(true)} />
       <IncomeList />
+      <Drawer position="right" opened={isFormOpen} onClose={() => setIsFormOpen(false)}>
+        <div className="w-full">
+          <IncomeForm />
+        </div>
+      </Drawer>
     </div>
   );
 };

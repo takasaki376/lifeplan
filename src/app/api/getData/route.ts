@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/utils/firebaseAdmin';
+import { getDebt } from '../debts';
+import { getExpense } from '../expenses';
 import { getFamily } from '../family';
 import { getIncome } from '../incomes';
 
@@ -20,7 +22,13 @@ export async function GET(req: NextRequest) {
     // Incomeデータの取得
     const incomes = await getIncome(userId);
 
-    return NextResponse.json({ families, incomes }, { status: 200 });
+    // Expenseデータの取得
+    const expenses = await getExpense(userId);
+
+    // 債務データの取得
+    const debts = await getDebt(userId);
+
+    return NextResponse.json({ families, incomes, expenses, debts }, { status: 200 });
   } catch (error) {
     console.error('Error fetching data:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

@@ -1,13 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Drawer } from '@mantine/core';
+import { Header } from '@/src/components/common/Header';
+import { FamilyForm } from '@/src/components/Family/FamilyForm';
 import { FamilyList } from '@/src/components/Family/FamilyList';
 import { useAuth } from '@/src/hooks/useAuth';
 
 export default function FamilyPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -20,12 +24,14 @@ export default function FamilyPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex flex-col ">
-        <h1 className="text-2xl font-bold mb-4">家族情報</h1>
-        <div>追加</div>
-      </div>
+    <div className="container mx-auto p-4 flex flex-col">
+      <Header title="家族情報" btnTitle="家族追加" onBtnClick={() => setIsFormOpen(true)} />
       <FamilyList />
+      <Drawer position="right" opened={isFormOpen} onClose={() => setIsFormOpen(false)}>
+        <div className="w-full">
+          <FamilyForm />
+        </div>
+      </Drawer>
     </div>
   );
 }

@@ -70,3 +70,19 @@ export const updateFamily = async (userId: string, id: string, newFamily: Family
     throw new Error('家族データの更新に失敗しました');
   }
 };
+
+/**
+ * 家族データを削除する関数
+ * @param userId - ログインユーザーのID
+ * @param id - 削除対象のドキュメントID
+ */
+export const deleteFamily = async (userId: string, id: string) => {
+  try {
+    const docRef = adminDb.collection('users').doc(userId).collection('family').doc(id);
+    await docRef.delete();
+    console.log(`ドキュメント ${id} が正常に削除されました`);
+  } catch (error) {
+    console.error('家族データの削除中にエラーが発生しました:', error);
+    throw new Error('家族データの削除に失敗しました');
+  }
+};

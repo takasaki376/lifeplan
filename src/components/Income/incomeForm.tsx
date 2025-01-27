@@ -19,7 +19,7 @@ import { useIncome } from '@/src/hooks/useIncome';
 import { CalculationResult } from '@/src/types';
 import { calculateNetIncome } from '@/src/utils/taxCalculations';
 
-const IncomeForm = () => {
+export function IncomeForm() {
   const [name, setName] = useState<string>('');
   const [familyId, setFamilyId] = useState<string>('');
   const [income, setIncome] = useState<number | undefined>(undefined);
@@ -175,6 +175,4 @@ const IncomeForm = () => {
       )}
     </>
   );
-};
-
-export default IncomeForm;
+}
