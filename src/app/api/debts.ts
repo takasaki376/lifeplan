@@ -34,6 +34,8 @@ export const addDebt = async (userId: string, newDebt: Debt) => {
       ...newDebt,
       dueDate: newDebt.dueDate ? Timestamp.fromDate(newDebt.dueDate) : '',
       recordedDate: Timestamp.fromDate(newDebt.recordedDate),
+      createdAt: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
     };
 
     await docRef.set(debtData);
@@ -55,15 +57,15 @@ export const updateDebt = async (userId: string, id: string, updatedData: Debt) 
   try {
     const docRef = adminDb.collection('users').doc(userId).collection('debts').doc(id);
 
-    const dataToUpdate: Record<string, any> = {};
-    if (updatedData.recordedDate !== undefined) {
-      dataToUpdate.recordedDate = Timestamp.fromDate(updatedData.recordedDate);
-    }
-    if (updatedData.recordedDate !== undefined) {
-      dataToUpdate.recordedDate = Timestamp.fromDate(updatedData.recordedDate);
-    }
+    const debtData = {
+      ...updatedData,
+      dueDate: updatedData.dueDate ? Timestamp.fromDate(updatedData.dueDate) : '',
+      recordedDate: Timestamp.fromDate(updatedData.recordedDate),
+      createdAt: Timestamp.fromDate(updatedData.createdAt || new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
+    };
 
-    await docRef.update(dataToUpdate);
+    await docRef.update(debtData);
     console.log(`ドキュメント ${id} が正常に更新されました`);
   } catch (error) {
     console.error('債務データの更新中にエラーが発生しました:', error);

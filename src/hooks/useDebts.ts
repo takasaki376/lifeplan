@@ -1,74 +1,31 @@
 'use client';
 
 import { useState } from 'react';
-import { auth } from '@/src/utils/firebase';
+import { useAtom } from 'jotai';
+import { createDelete, createPost, createPut } from '../services/api';
+import { debtsAtom } from '../store/atoms';
 import { Debt } from '../types';
 
 export const useDebt = () => {
-  const [debts, setDebt] = useState<Debt[]>([]);
+  const [debts, setDebt] = useAtom(debtsAtom);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const idToken = async () => {
-    const user = auth.currentUser;
-    if (!user) {
-      throw new Error('ユーザーが認証されていません');
-    }
-
-    const idToken = await user.getIdToken();
-    return idToken;
-  };
-
-  // useEffect(() => {
-  //   if (!idToken) {
-  //     return;
-  //   }
-
-  //   const fetchDebts = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const res = await fetch('/api/debts', {
-  //         headers: {
-  //           Authorization: `Bearer ${idToken}`,
-  //         },
-  //       });
-  //       if (!res.ok) {
-  //         throw new Error('Failed to fetch Debts');
-  //       }
-  //       const data: Debt[] = await res.json();
-  //       setDebt(data);
-  //     } catch (err) {
-  //       console.error(err);
-  //       setError('債務データの取得に失敗しました');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchDebts();
-  // }, [idToken]);
 
   /**
    * 債務データをAPI経由で登録する関数
    * @param newDebt - 登録する債務データの配列
    */
   const addDebt = async (newDebt: Debt) => {
+    setLoading(true);
+
     try {
-      const response = await fetch('/api/debts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
-        body: JSON.stringify(newDebt),
-      });
-
-      if (!response.ok) {
-        throw new Error('債務データの登録に失敗しました');
-      }
-
-      const savedDebt = await response.json();
-      setDebt((prev) => [...prev, ...savedDebt]);
+      const savedDebt = await createPost<Debt>('debts', newDebt);
+      setDebt((prev) => [...prev, ...savedDebt.data]);
     } catch (error) {
       console.error('登録エラー:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,25 +33,9 @@ export const useDebt = () => {
   const updateDebt = async (id: string, updatedFields: Partial<Debt>) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/debts`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ id, updatedFields }),
-      });
-      if (!res.ok) {
-        throw new Error('Failed to update Debt');
-      }
-      await res.json();
-      // データ再取得
-      const updatedDebts = await fetch(`/api/debts`, {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      }).then((res) => res.json());
-      setDebt(updatedDebts);
+      const updatedDebt = await createPut<Debt>('debts', updatedFields);
+
+      setDebt((prev) => prev.map((debt) => (debt.id === id ? updatedDebt.data : debt)));
     } catch (err) {
       console.error(err);
       setError('債務の更新に失敗しました');
@@ -107,23 +48,8 @@ export const useDebt = () => {
   const deleteDebt = async (id: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/debts?id=${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-      if (!res.ok) {
-        throw new Error('Failed to delete Debt');
-      }
-      await res.json();
-      // データ再取得
-      const updatedDebts = await fetch(`/api/debts`, {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      }).then((res) => res.json());
-      setDebt(updatedDebts);
+      const updatedDebts = await createDelete<Debt>('debts', id);
+      setDebt(updatedDebts.data);
     } catch (err) {
       console.error(err);
       setError('債務の削除に失敗しました');

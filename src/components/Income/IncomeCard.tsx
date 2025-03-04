@@ -17,10 +17,11 @@ const IncomeCard = ({ income }: IncomeCardProps) => {
     <Card shadow="sm" padding="lg" radius="md" withBorder className="mb-4">
       <Text className="text-lg font-bold">{income.name}</Text>
       <Text>名称: {income.name}</Text>
-      <Text>収入額: {income.income?.toLocaleString()} 円</Text>
+
       <Text>
         期間: {income.startAge}歳 〜 {income.endAge}歳
       </Text>
+      <Text>収入額: {income.income?.toLocaleString()} 円</Text>
 
       <div className="flex justify-between mt-4">
         <Button

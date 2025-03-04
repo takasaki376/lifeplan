@@ -1,31 +1,22 @@
 import { NextResponse } from 'next/server';
-import { addDebt } from '@/src/app/api/debts';
+import { addDebt, deleteDebt } from '@/src/app/api/debts';
 import { Debt } from '@/src/types';
-import { adminDb } from '@/src/utils/firebaseAdmin';
-
-// // 債務の取得
-// export async function GET(req: Request) {
-//   const { searchParams } = new URL(req.url);
-//   const userId = searchParams.get('userId');
-//   if (!userId) {
-//     return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
-//   }
-
-//   try {
-//     const snapshot = await adminDb.collection('debts').where('userId', '==', userId).get();
-//     const debts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-//     return NextResponse.json(debts);
-//   } catch (error) {
-//     return NextResponse.json({ error: '債務データの取得に失敗しました' }, { status: 500 });
-//   }
-// }
+import { getUserId } from '@/src/utils/getUserId';
 
 // 債務の追加
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { userId, name, balance, interestRate, monthlyPayment, dueDate, recordedDate } = body;
+  const { userId, error } = await getUserId(req);
+  if (error) {
+    return NextResponse.json({ error }, { status: 401 });
+  }
+  if (!userId) {
+    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+  }
 
-  if (!userId || !name || balance === undefined) {
+  const body = await req.json();
+  const { name, balance, interestRate, monthlyPayment, dueDate, recordedDate } = body;
+
+  if (!name || balance === undefined) {
     return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
   }
 
@@ -50,6 +41,14 @@ export async function POST(req: Request) {
 
 // 債務の削除
 export async function DELETE(req: Request) {
+  const { userId, error } = await getUserId(req);
+  if (error) {
+    return NextResponse.json({ error }, { status: 401 });
+  }
+  if (!userId) {
+    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+  }
+
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
   if (!id) {
@@ -57,8 +56,8 @@ export async function DELETE(req: Request) {
   }
 
   try {
-    await adminDb.collection('debts').doc(id).delete();
-    return NextResponse.json({ success: true });
+    await deleteDebt(userId, id);
+    return NextResponse.json({ id });
   } catch (error) {
     return NextResponse.json({ error: '債務データの削除に失敗しました。' }, { status: 500 });
   }

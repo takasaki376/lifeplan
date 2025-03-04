@@ -14,7 +14,7 @@ export default function AssetPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
 
-  const handleEdit = (asset: any) => {
+  const handleEdit = (asset: Asset) => {
     setIsEditing(true);
     setEditingAsset(asset);
   };

@@ -35,7 +35,6 @@ export type Income = {
   updatedAt?: Date;
 };
 export type ApiIncome = {
-  id?: string; // Firestore ドキュメント ID
   name: string; //収入の名称
   income: number; //収入額
   startAge: number; //開始年齢
@@ -53,12 +52,15 @@ export type Expense = {
   id?: string; // Firestore ドキュメント ID
   recordedDate: Date; // 支出の日付
   categories: ExpenseCategory; // カテゴリごとの支出金額
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type ApiExpense = {
-  id?: string;
   recordedDate: string | Timestamp; // サーバー側では ISO 8601 の文字列形式で扱う
   categories: ExpenseCategory;
+  createdAt?: string | Timestamp; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
+  updatedAt?: string | Timestamp; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
 };
 
 // ---------------------
@@ -70,6 +72,13 @@ export type Asset = {
   amount: number;
   createdAt?: Date;
   updatedAt?: Date;
+};
+export type ApiAsset = {
+  type: 'cash' | 'deposit' | 'real_estate' | 'stocks' | 'other';
+  details?: string;
+  amount: number;
+  createdAt?: string | Timestamp; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
+  updatedAt?: string | Timestamp; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
 };
 
 // ---------------------
@@ -94,8 +103,8 @@ export type ApiDebt = {
   dueDate: string; // 返済期日 (ISO8601形式の文字列)
   monthlyPayment: number; // 月額返済金額
   recordedDate: string; // 登録時点の日付 (ISO8601形式の文字列)
-  createdAt?: string; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
-  updatedAt?: string; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
+  createdAt?: string | Timestamp; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
+  updatedAt?: string | Timestamp; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
 };
 
 export type CalculationResult = {

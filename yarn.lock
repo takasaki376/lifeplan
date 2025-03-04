@@ -13312,6 +13312,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ky@npm:^1.7.5":
+  version: 1.7.5
+  resolution: "ky@npm:1.7.5"
+  checksum: 10c0/9f9c70a4916592f728c90e38ecbe2ed468eb7161b7525a4561a861e457edd5cb706751e2aba615d350380231d021f535147f9ed3ca07271af836465ecc725761
+  languageName: node
+  linkType: hard
+
 "language-subtag-registry@npm:^0.3.20":
   version: 0.3.22
   resolution: "language-subtag-registry@npm:0.3.22"
@@ -13744,6 +13751,7 @@ __metadata:
     jest-environment-jsdom: "npm:^29.7.0"
     jotai: "npm:^2.11.0"
     jotai-devtools: "npm:^0.10.1"
+    ky: "npm:^1.7.5"
     next: "npm:15.0.1"
     postcss: "npm:^8.4.49"
     postcss-preset-mantine: "npm:1.17.0"

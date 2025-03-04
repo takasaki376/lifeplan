@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addIncome, deleteIncome, getIncome } from '@/src/app/api/incomes';
 import { Income } from '@/src/types';
-import { adminAuth } from '@/src/utils/firebaseAdmin';
+import { getUserId } from '@/src/utils/getUserId';
 
 /**
  * GET: 収入データを取得
  */
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: '認証トークンが必要です。' }, { status: 401 });
+    const { userId, error } = await getUserId(req);
+    if (error) {
+      return NextResponse.json({ error }, { status: 401 });
     }
-
-    const idToken = authHeader.split('Bearer ')[1];
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
-    const userId = decodedToken.uid;
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
 
     // 収入データを取得
     const incomes = await getIncome(userId);
@@ -32,16 +31,15 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: '認証トークンが必要です。' }, { status: 401 });
+    const { userId, error } = await getUserId(req);
+    if (error) {
+      return NextResponse.json({ error }, { status: 401 });
+    }
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const idToken = authHeader.split('Bearer ')[1];
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
-    const userId = decodedToken.uid;
-
+    const body = await req.json();
     const savedIncomes = [];
 
     const { familyId, name, income, startAge, endAge } = body;
@@ -71,14 +69,13 @@ export async function POST(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: '認証トークンが必要です。' }, { status: 401 });
+    const { userId, error } = await getUserId(req);
+    if (error) {
+      return NextResponse.json({ error }, { status: 401 });
     }
-
-    const idToken = authHeader.split('Bearer ')[1];
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
-    const userId = decodedToken.uid;
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
 
     // URLからincomeIdを取得
     const { searchParams } = new URL(req.url);

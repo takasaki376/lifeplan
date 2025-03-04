@@ -1,23 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addExpense, updateExpense } from '@/src/app/api/expenses';
 import { Expense } from '@/src/types';
-import { adminAuth } from '@/src/utils/firebaseAdmin';
+// import { adminAuth } from '@/src/utils/firebaseAdmin';
+
+import { getUserId } from '@/src/utils/getUserId';
 
 /**
  * POST: 新しい支出データを登録
  */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: '認証トークンが必要です。' }, { status: 401 });
+    const { userId, error } = await getUserId(req);
+    if (error) {
+      return NextResponse.json({ error }, { status: 401 });
+    }
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const idToken = authHeader.split('Bearer ')[1];
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
-    const userId = decodedToken.uid;
+    // const authHeader = req.headers.get('Authorization');
+    // if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    //   return { error: '認証トークンが必要です。' };
+    // }
 
+    // const idToken = authHeader.split('Bearer ')[1];
+    // const decodedToken = await adminAuth.verifyIdToken(idToken);
+    // const userId = decodedToken.uid;
+
+    const body = await req.json();
     if (!Array.isArray(body)) {
       return NextResponse.json(
         { error: 'リクエストボディは配列形式である必要があります。' },
@@ -29,9 +39,9 @@ export async function POST(req: NextRequest) {
 
     for (const expense of body) {
       const { categories, recordedDate, id } = expense;
-      if (!userId || !categories || !recordedDate) {
+      if (!categories || !recordedDate) {
         return NextResponse.json(
-          { error: 'userId, category, dateのすべてを含む必要があります。' },
+          { error: 'category, dateのすべてを含む必要があります。' },
           { status: 400 }
         );
       }

@@ -7,15 +7,11 @@ import { firebaseApp } from '../utils/firebase';
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState<string>('');
 
   useEffect(() => {
     const auth = getAuth(firebaseApp);
-    // auth.currentUser?.getIdToken(true).then((idToken) => {
-    //   // Send token to your backend via HTTPS
-    //   // ...
-    // }).catch((error) => {
-    //   console.error('Error fetching ID token:', error);
-    // });
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
@@ -24,5 +20,16 @@ export const useAuth = () => {
     return () => unsubscribe();
   }, []);
 
-  return { user, loading };
+  if (user) {
+    user
+      .getIdToken()
+      .then((idToken) => {
+        setToken(idToken);
+      })
+      .catch((error) => {
+        console.error('Error fetching ID token:', error);
+      });
+  }
+
+  return { user, token, loading };
 };

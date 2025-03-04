@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-// import { Asset } from '@/src/types';
-import { adminAuth, adminDb } from '@/src/utils/firebaseAdmin';
-import { getAssets } from '../assets';
-
-// import { getAssets } from '../assets';
+import { Asset } from '@/src/types';
+import { adminAuth } from '@/src/utils/firebaseAdmin';
+import { getUserId } from '@/src/utils/getUserId';
+import { addAssets, deleteAssets, getAssets, updateAssets } from '../assets';
 
 /**
  * GET: 資産データを取得
@@ -32,128 +31,102 @@ export async function GET(req: Request) {
   }
 }
 
-// /**
-//  * POST: 新しい資産データを登録
-//  */
-// export async function POST(req: Request) {
-//   const body = await req.json();
-
-//   const authHeader = req.headers.get('Authorization');
-//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-//     return NextResponse.json({ error: '認証トークンが必要です。' }, { status: 401 });
-//   }
-
-//   const idToken = authHeader.split('Bearer ')[1];
-//   const decodedToken = await adminAuth.verifyIdToken(idToken);
-//   const userId = decodedToken.uid;
-
-//   if (!body.type || !body.amount) {
-//     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-//   }
-
-//   const assetsData: Asset = { categories, date: new Date(date) };
-
-//   try {
-//     if (id) {
-//       // 更新処理
-//       await updateAssets(userId, id, assetsData);
-//       assetsData.id = id;
-//     } else {
-//       // 登録処理
-//       assetsData.id = await addAssets(userId, assetsData);
-//     }
-
-//     savedAssets.push(assetsData);
-//   } catch (error) {
-//     console.error(error);
-//     return NextResponse.json({ error: 'Failed to create asset' }, { status: 500 });
-//   }
-// }
-
-// export async function PUT(req: Request) {
-//   const body = await req.json();
-
-//   const authHeader = req.headers.get('Authorization');
-//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-//     return NextResponse.json({ error: '認証トークンが必要です。' }, { status: 401 });
-//   }
-
-//   const idToken = authHeader.split('Bearer ')[1];
-//   const decodedToken = await adminAuth.verifyIdToken(idToken);
-//   const userId = decodedToken.uid;
-
-//   if (!body.id || !body.updatedFields) {
-//     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-//   }
-
-//   try {
-//     // 更新処理
-//     await updateAssets(userId, id, expenseData);
-//     return NextResponse.json({ success: true });
-//   } catch (error) {
-//     console.error(error);
-//     return NextResponse.json({ error: 'Failed to update asset' }, { status: 500 });
-//   }
-// }
-
+/**
+ * POST: 資産データを登録
+ */
 export async function POST(req: Request) {
-  const body = await req.json();
+  const { userId, error } = await getUserId(req);
+  if (error) {
+    return NextResponse.json({ error }, { status: 401 });
+  }
+  if (!userId) {
+    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+  }
 
-  if (!body.userId || !body.type || !body.amount) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  const body = await req.json();
+  const { type, amount, details } = body;
+
+  if (!type || !amount) {
+    return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
   }
 
   try {
-    const assetsRef = adminDb.collection('users').doc(body.userId).collection('Assets');
-    const docRef = await assetsRef.add({
-      type: body.type,
-      details: body.details || '',
-      amount: body.amount,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    return NextResponse.json({ id: docRef.id });
+    const newAsset: Asset = {
+      type,
+      details,
+      amount,
+    };
+
+    // 登録処理
+    newAsset.id = await addAssets(userId, newAsset);
+
+    return NextResponse.json({ newAsset });
   } catch (error) {
-    console.error('Failed to add asset:', error);
-    return NextResponse.json({ error: 'Failed to add asset' }, { status: 500 });
+    console.error('資産データの登録に失敗しました。:', error);
+    return NextResponse.json({ error: '資産データの登録に失敗しました。' }, { status: 500 });
   }
 }
 
+/**
+ * PUT: 資産データを更新
+ */
 export async function PUT(req: Request) {
-  const body = await req.json();
-
-  if (!body.id || !body.updatedFields || !body.userId) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  const { userId, error } = await getUserId(req);
+  if (error) {
+    return NextResponse.json({ error }, { status: 401 });
   }
 
+  if (!userId) {
+    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+  }
+
+  const body = await req.json();
+  const { id, type, amount, details } = body;
+
+  if (!id || !type || !amount) {
+    return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+  }
+
+  const newAsset: Asset = {
+    id,
+    type,
+    details,
+    amount,
+  };
   try {
-    const assetRef = adminDb.collection('users').doc(body.userId).collection('Assets').doc(body.id);
-    await assetRef.update({
-      ...body.updatedFields,
-      updatedAt: new Date(),
-    });
-    return NextResponse.json({ success: true });
+    // 登録処理
+    const asset = await updateAssets(userId, id, newAsset);
+
+    return NextResponse.json({ asset });
   } catch (error) {
-    console.error('Failed to update asset:', error);
-    return NextResponse.json({ error: 'Failed to update asset' }, { status: 500 });
+    console.error('資産データの更新に失敗しました。:', error);
+    return NextResponse.json({ error: '資産データの更新に失敗しました。' }, { status: 500 });
   }
 }
 
+/**
+ * DELETE: 資産データを削除
+ */
 export async function DELETE(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId');
-  const assetId = searchParams.get('id');
+  const { userId, error } = await getUserId(req);
+  if (error) {
+    return NextResponse.json({ error }, { status: 401 });
+  }
+  if (!userId) {
+    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+  }
 
-  if (!userId || !assetId) {
-    return NextResponse.json({ error: 'User ID and Asset ID are required' }, { status: 400 });
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+  if (!id) {
+    return NextResponse.json({ error: 'Debt ID is required' }, { status: 400 });
   }
 
   try {
-    const assetRef = adminDb.collection('users').doc(userId).collection('Assets').doc(assetId);
-    await assetRef.delete();
-    return NextResponse.json({ success: true });
+    await deleteAssets(userId, id);
+    return NextResponse.json({ id });
   } catch (error) {
     console.error('Failed to delete asset:', error);
-    return NextResponse.json({ error: 'Failed to delete asset' }, { status: 500 });
+    return NextResponse.json({ error: '資産データの削除に失敗しました。' }, { status: 500 });
   }
 }

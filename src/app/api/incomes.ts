@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase-admin/firestore';
-import { Income } from '@/src/types';
+import { ApiIncome, Income } from '@/src/types';
 import { adminDb } from '@/src/utils/firebaseAdmin';
 
 /**
@@ -30,7 +30,7 @@ export const addIncome = async (userId: string, newIncome: Income) => {
   try {
     const docRef = adminDb.collection('users').doc(userId).collection('incomes').doc();
 
-    const incomeData = {
+    const incomeData: ApiIncome = {
       ...newIncome,
       createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
@@ -55,8 +55,9 @@ export const updateIncome = async (userId: string, id: string, updatedData: Inco
   try {
     const docRef = adminDb.collection('users').doc(userId).collection('incomes').doc(id);
 
-    const incomeData = {
+    const incomeData: ApiIncome = {
       ...updatedData,
+      createdAt: Timestamp.fromDate(updatedData.createdAt || new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
     };
 
