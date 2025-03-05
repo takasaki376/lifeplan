@@ -5,6 +5,16 @@ import '@mantine/dates/styles.css';
 import { Button, Card, Group, Stack, Text } from '@mantine/core';
 import { useDebt } from '@/src/hooks/useDebts';
 
+const formatDate = (date: string | Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: 'Asia/Tokyo',
+  };
+  return new Intl.DateTimeFormat('ja-JP', options).format(new Date(date));
+};
+
 export default function DebtList() {
   const { debts, deleteDebt } = useDebt();
 
@@ -18,9 +28,9 @@ export default function DebtList() {
               削除
             </Button>
           </Group>
-          <Text>残高: ¥{debt.balance.toLocaleString()}</Text>
+          <Text>残高: ¥{debt.balance}</Text>
           <Text>金利: {debt.interestRate}%</Text>
-          <Text>返済期日: {debt.dueDate ? debt.dueDate.toLocaleDateString() : 'N/A'}</Text>
+          <Text>返済期日: {debt.dueDate ? formatDate(debt.dueDate) : 'N/A'}</Text>
         </Card>
       ))}
     </Stack>

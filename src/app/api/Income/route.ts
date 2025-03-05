@@ -68,27 +68,23 @@ export async function POST(req: NextRequest) {
  * DELETE: 収入データを削除
  */
 export async function DELETE(req: NextRequest) {
+  const { userId, error } = await getUserId(req);
+  if (error) {
+    return NextResponse.json({ error }, { status: 401 });
+  }
+  if (!userId) {
+    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+  if (!id) {
+    return NextResponse.json({ error: 'family ID is required' }, { status: 400 });
+  }
+
   try {
-    const { userId, error } = await getUserId(req);
-    if (error) {
-      return NextResponse.json({ error }, { status: 401 });
-    }
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
-    }
-
-    // URLからincomeIdを取得
-    const { searchParams } = new URL(req.url);
-    const incomeId = searchParams.get('id');
-
-    if (!incomeId) {
-      return NextResponse.json({ error: '収入IDが必要です。' }, { status: 400 });
-    }
-
-    // 削除処理を実行
-    await deleteIncome(userId, incomeId);
-
-    return NextResponse.json({ message: '収入データを削除しました。' }, { status: 200 });
+    await deleteIncome(userId, id);
+    return NextResponse.json({ id });
   } catch (error) {
     console.error('収入データの削除中にエラーが発生しました:', error);
     return NextResponse.json({ error: '収入データの削除に失敗しました。' }, { status: 500 });

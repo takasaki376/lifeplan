@@ -10,10 +10,15 @@ export const getAssets = async (userId: string) => {
   try {
     const assetsRef = adminDb.collection('users').doc(userId).collection('assets');
     const snapshot = await assetsRef.get();
-    const assets = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const assets = snapshot.docs.map((doc) => {
+      const data = doc.data() as ApiAsset;
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : null,
+        updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : null,
+      };
+    });
     return assets;
   } catch (error) {
     console.error('資産データの取得中にエラーが発生しました:', error);

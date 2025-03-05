@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAtom } from 'jotai';
-import { createPost, createPut } from '../services/api';
+import { createDelete, createPost, createPut } from '../services/api';
 import { expensesAtom } from '../store/atoms';
 import { Expense } from '../types';
 
@@ -51,11 +51,29 @@ export const useExpenses = () => {
       setLoading(false);
     }
   };
+  const deleteExpense = async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await createDelete<Expense>('expenses', id);
+      if (res.status === 200) {
+        setExpenses((prev) => prev.filter((expense) => expense.id !== id));
+      } else {
+        console.error(res);
+        setError('支出の削除に失敗しました');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('支出の削除に失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     expenses,
     addExpenses,
     updateExpense,
+    deleteExpense,
     loading,
     error,
   };

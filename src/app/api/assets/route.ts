@@ -94,7 +94,7 @@ export async function PUT(req: Request) {
     amount,
   };
   try {
-    // 登録処理
+    // 更新処理
     const asset = await updateAssets(userId, id, newAsset);
 
     return NextResponse.json({ asset });

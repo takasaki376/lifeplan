@@ -18,15 +18,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    // const authHeader = req.headers.get('Authorization');
-    // if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    //   return { error: '認証トークンが必要です。' };
-    // }
-
-    // const idToken = authHeader.split('Bearer ')[1];
-    // const decodedToken = await adminAuth.verifyIdToken(idToken);
-    // const userId = decodedToken.uid;
-
     const body = await req.json();
     if (!Array.isArray(body)) {
       return NextResponse.json(

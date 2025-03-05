@@ -11,11 +11,13 @@ export const getFamily = async (userId: string) => {
     const familyRef = adminDb.collection('users').doc(userId).collection('family');
     const snapshot = await familyRef.get();
     const families = snapshot.docs.map((doc) => {
-      const data = doc.data();
+      const data = doc.data() as ApiFamily;
       return {
         id: doc.id,
         ...data,
-        birthDate: data.birthDate ? data.birthDate.toDate() : null,
+        birthDate: data.birthDate instanceof Timestamp ? data.birthDate.toDate() : null,
+        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : null,
+        updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : null,
       };
     });
 
@@ -38,6 +40,8 @@ export const addFamily = async (userId: string, newFamily: Family) => {
     const familyData: ApiFamily = {
       ...newFamily,
       birthDate: newFamily.birthDate ? Timestamp.fromDate(newFamily.birthDate) : '',
+      createdAt: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
     };
 
     await docRef.set(familyData);
@@ -55,12 +59,14 @@ export const addFamily = async (userId: string, newFamily: Family) => {
  * @param id - 更新対象のドキュメントID
  * @param newFamily - 更新するデータ
  */
-export const updateFamily = async (userId: string, id: string, newFamily: Family) => {
+export const updateFamily = async (userId: string, id: string, updatedData: Family) => {
   try {
     const docRef = adminDb.collection('users').doc(userId).collection('family').doc(id);
     const familyData = {
-      ...newFamily,
-      birthDate: newFamily.birthDate ? Timestamp.fromDate(newFamily.birthDate) : '',
+      ...updatedData,
+      birthDate: updatedData.birthDate ? Timestamp.fromDate(updatedData.birthDate) : '',
+      createdAt: Timestamp.fromDate(updatedData.createdAt || new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
     };
 
     await docRef.update(familyData);

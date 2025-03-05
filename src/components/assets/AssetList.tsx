@@ -1,6 +1,7 @@
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { Button, Card, Group, Stack, Text } from '@mantine/core';
 import { Asset } from '@/src/types';
+import { assetTypes } from './AssetForm';
 
 type CardProps = {
   asset: Asset;
@@ -11,22 +12,19 @@ const AssetCard = ({ asset, onEdit, onDelete }: CardProps) => {
   if (!asset.id) {
     return null;
   }
+  // asset.typeを日本語の名称に変換
+  const assetTypeName = assetTypes.map((type) => (type.value === asset.type ? type.label : ''))[0];
 
   return (
     <Card key={asset.id} shadow="sm" padding="lg" radius="md" withBorder>
       <Group align="flex-start">
         <div>
-          <Text className="mb-2 text-lg">{asset.type}</Text>
+          <Text className="mb-2 text-lg">{assetTypeName}</Text>
           <Text className="mb-2 text-sm">{asset.details || '詳細なし'}</Text>
           <Text className="text-gray-600 text-sm">¥{asset.amount}</Text>
         </div>
         <Group>
-          <Button
-            size="xs"
-            color="blue"
-            // leftIcon={<IconEdit size={16} />}
-            onClick={() => onEdit(asset)}
-          >
+          <Button size="xs" color="blue" onClick={() => onEdit(asset)}>
             <IconEdit size={16} />
             編集
           </Button>

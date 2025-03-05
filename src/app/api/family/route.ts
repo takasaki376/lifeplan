@@ -45,29 +45,23 @@ export async function POST(req: NextRequest) {
  * DELETE: 家族データを削除
  */
 export async function DELETE(req: NextRequest) {
+  const { userId, error } = await getUserId(req);
+  if (error) {
+    return NextResponse.json({ error }, { status: 401 });
+  }
+  if (!userId) {
+    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+  }
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+  if (!id) {
+    return NextResponse.json({ error: 'family ID is required' }, { status: 400 });
+  }
+
   try {
-    const { userId, error } = await getUserId(req);
-    if (error) {
-      return NextResponse.json({ error }, { status: 401 });
-    }
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
-    }
-
-    // URLからincomeIdを取得
-    const { searchParams } = new URL(req.url);
-    const familyId = searchParams.get('id');
-
-    if (!userId || !familyId) {
-      return NextResponse.json({ error: 'ユーザーIDと家族IDが必要です。' }, { status: 400 });
-    }
-
-    // 削除処理
-    await deleteFamily(userId, familyId);
-
-    return NextResponse.json({ message: '家族データを削除しました。' }, { status: 200 });
+    await deleteFamily(userId, id);
+    return NextResponse.json({ id });
   } catch (error) {
-    console.error('家族データの削除中にエラーが発生しました:', error);
     return NextResponse.json({ error: '家族データの削除に失敗しました。' }, { status: 500 });
   }
 }

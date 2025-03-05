@@ -10,10 +10,15 @@ export const getIncome = async (userId: string) => {
   try {
     const incomeRef = adminDb.collection('users').doc(userId).collection('incomes');
     const snapshot = await incomeRef.get();
-    const incomes = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const incomes = snapshot.docs.map((doc) => {
+      const data = doc.data() as ApiIncome;
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : null,
+        updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : null,
+      };
+    });
     return incomes;
   } catch (error) {
     console.error('収入データの取得中にエラーが発生しました:', error);

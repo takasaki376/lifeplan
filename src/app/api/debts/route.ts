@@ -16,7 +16,12 @@ export async function POST(req: Request) {
   const body = await req.json();
   const { name, balance, interestRate, monthlyPayment, dueDate, recordedDate } = body;
 
-  if (!name || balance === undefined) {
+  if (
+    !name ||
+    balance === undefined ||
+    interestRate === undefined ||
+    monthlyPayment === undefined
+  ) {
     return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
   }
 

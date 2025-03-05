@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase-admin/firestore';
-import { Debt } from '@/src/types';
+import { ApiDebt, Debt } from '@/src/types';
 import { adminDb } from '@/src/utils/firebaseAdmin';
 
 /**
@@ -10,10 +10,17 @@ export const getDebt = async (userId: string) => {
   try {
     const expenseRef = adminDb.collection('users').doc(userId).collection('debts');
     const snapshot = await expenseRef.get();
-    const debt = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const debt = snapshot.docs.map((doc) => {
+      const data = doc.data() as ApiDebt;
+      return {
+        id: doc.id,
+        ...data,
+        dueDate: data.dueDate instanceof Timestamp ? data.dueDate.toDate() : null,
+        recordedDate: data.recordedDate instanceof Timestamp ? data.recordedDate.toDate() : null,
+        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : null,
+        updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : null,
+      };
+    });
     return debt;
   } catch (error) {
     console.error('債務データの取得中にエラーが発生しました:', error);
@@ -30,10 +37,10 @@ export const addDebt = async (userId: string, newDebt: Debt) => {
   try {
     const docRef = adminDb.collection('users').doc(userId).collection('debts').doc();
 
-    const debtData = {
+    const debtData: ApiDebt = {
       ...newDebt,
-      dueDate: newDebt.dueDate ? Timestamp.fromDate(newDebt.dueDate) : '',
-      recordedDate: Timestamp.fromDate(newDebt.recordedDate),
+      dueDate: newDebt.dueDate ? Timestamp.fromDate(new Date(newDebt.dueDate)) : '',
+      recordedDate: Timestamp.fromDate(new Date(newDebt.recordedDate)),
       createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
     };

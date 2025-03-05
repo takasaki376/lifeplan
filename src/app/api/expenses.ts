@@ -10,10 +10,16 @@ export const getExpense = async (userId: string) => {
   try {
     const expenseRef = adminDb.collection('users').doc(userId).collection('expenses');
     const snapshot = await expenseRef.get();
-    const expense = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const expense = snapshot.docs.map((doc) => {
+      const data = doc.data() as ApiExpense;
+      return {
+        id: doc.id,
+        ...data,
+        recordedDate: data.recordedDate instanceof Timestamp ? data.recordedDate.toDate() : null,
+        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : null,
+        updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : null,
+      };
+    });
     return expense;
   } catch (error) {
     console.error('支出データの取得中にエラーが発生しました:', error);

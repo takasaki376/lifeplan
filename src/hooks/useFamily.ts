@@ -32,7 +32,6 @@ export const useFamily = () => {
       const updatedFamilys = await createPut<Family>('family', updatedFields);
 
       setFamily((prev) => prev.map((family) => (family.id === id ? updatedFamilys.data : family)));
-      // setFamily(updatedFamilys);
     } catch (err) {
       console.error(err);
       setError('家族の更新に失敗しました');
@@ -45,8 +44,13 @@ export const useFamily = () => {
   const deleteFamily = async (id: string) => {
     setLoading(true);
     try {
-      const updatedFamilys = await createDelete<Family>('family', id);
-      setFamily(updatedFamilys.data);
+      const res = await createDelete<Family>('family', id);
+      if (res.status === 200) {
+        setFamily((prev) => prev.filter((family) => family.id !== id));
+      } else {
+        console.error(res);
+        setError('家族の削除に失敗しました');
+      }
     } catch (err) {
       console.error(err);
       setError('家族の削除に失敗しました');
@@ -54,5 +58,6 @@ export const useFamily = () => {
       setLoading(false);
     }
   };
+
   return { family, addFamily, updateFamily, deleteFamily, loading, error };
 };

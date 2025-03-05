@@ -158,14 +158,14 @@ export async function createDelete<T>(
     // ✅ ステータスコードを取得
     console.log(`✅ Response Status: ${response.status}`);
 
-    // 🌟 `Response` オブジェクトを取得
-    const responseGet = await api.get<T[]>(pass);
+    // // 🌟 `Response` オブジェクトを取得
+    // const responseGet = await api.get<T[]>(pass);
 
-    // 🌟 JSONデータを取得（型Tを適用）
-    const responseData: T[] = await responseGet.json();
-    console.log('📌 Delete:', responseData);
+    // // 🌟 JSONデータを取得（型Tを適用）
+    // const responseData: T[] = await responseGet.json();
+    // console.log('📌 Delete:', responseData);
 
-    return { status: response.status, data: responseData };
+    return { status: response.status, data: id as unknown as T[] };
   } catch (error) {
     console.error('❌ Error delete:', error);
     throw error;

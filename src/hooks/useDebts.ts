@@ -48,8 +48,13 @@ export const useDebt = () => {
   const deleteDebt = async (id: string) => {
     setLoading(true);
     try {
-      const updatedDebts = await createDelete<Debt>('debts', id);
-      setDebt(updatedDebts.data);
+      const res = await createDelete<Debt>('debts', id);
+      if (res.status === 200) {
+        setDebt((prev) => prev.filter((debt) => debt.id !== id));
+      } else {
+        console.error(res);
+        setError('債務の削除に失敗しました');
+      }
     } catch (err) {
       console.error(err);
       setError('債務の削除に失敗しました');
@@ -57,5 +62,6 @@ export const useDebt = () => {
       setLoading(false);
     }
   };
+
   return { debts, addDebt, updateDebt, deleteDebt, loading, error };
 };

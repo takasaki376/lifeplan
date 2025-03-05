@@ -16,17 +16,19 @@ const dateParser: DateInputProps['dateParser'] = (input) => {
   return dayjs(input, 'YYYY-MM-DD').toDate();
 };
 
+const initDebt = {
+  name: '',
+  balance: 0,
+  interestRate: 0,
+  dueDate: null,
+  monthlyPayment: 0,
+  recordedDate: new Date(),
+};
+
 export default function DebtForm() {
   // const [date, setDate] = useState<Date | null>(new Date());
   const [alartMes, setalartMes] = useState('');
-  const [form, setForm] = useState<Debt>({
-    name: '',
-    balance: 0,
-    interestRate: 0,
-    dueDate: null,
-    monthlyPayment: 0,
-    recordedDate: new Date(),
-  });
+  const [form, setForm] = useState<Debt>(initDebt);
   const { addDebt } = useDebt();
 
   const handleChange = (key: string, value: any) => {
@@ -52,14 +54,7 @@ export default function DebtForm() {
 
     try {
       await addDebt(newDebt);
-      setForm({
-        name: '',
-        balance: 0,
-        interestRate: 0,
-        dueDate: null,
-        monthlyPayment: 0,
-        recordedDate: form.recordedDate,
-      });
+      setForm(initDebt);
     } catch (error) {
       console.error(error);
     }
@@ -95,6 +90,7 @@ export default function DebtForm() {
           onChange={(value) => handleChange('dueDate', value)}
           placeholder="例: 2000-01"
           valueFormat="YYYY-MM"
+          required
         />
         <TextInput
           label="月額返済金額"
@@ -110,6 +106,7 @@ export default function DebtForm() {
           placeholder="例: 2000-01-01"
           dateParser={dateParser}
           valueFormat="YYYY-MM-DD"
+          required
         />
 
         <Button onClick={handleSubmit}>追加</Button>

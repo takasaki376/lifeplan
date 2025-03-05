@@ -1,7 +1,8 @@
 import { Button, NumberInput, Select, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { AssetType } from '@/src/types';
 
-const assetTypes = [
+export const assetTypes: { value: AssetType; label: string }[] = [
   { value: 'cash', label: '現金' },
   { value: 'deposit', label: '預金' },
   { value: 'real_estate', label: '不動産' },
@@ -37,6 +38,7 @@ export default function AssetForm({
         placeholder="選択してください"
         data={assetTypes}
         {...form.getInputProps('type')}
+        required
       />
       <TextInput
         label="詳細"
@@ -48,6 +50,7 @@ export default function AssetForm({
         // type="number"
         placeholder="金額を入力してください"
         {...form.getInputProps('amount')}
+        required
       />
       <div className="flex space-x-4">
         <Button type="submit" color="blue">

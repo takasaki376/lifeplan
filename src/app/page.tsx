@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAuth } from 'firebase/auth';
 import { useSetAtom } from 'jotai';
-import { Button, Container, Stack } from '@mantine/core';
+import { Button, Container, Loader, Stack } from '@mantine/core';
 // import { auth } from '@/src/utils/firebase';
 import { useAuth } from '../hooks/useAuth';
 import {
@@ -25,6 +25,7 @@ export default function HomePage() {
   const setExpenses = useSetAtom(expensesAtom);
   const setDebts = useSetAtom(debtsAtom);
   const { user, loading } = useAuth();
+  const [loadingData, setLoadingData] = useState(true);
 
   const auth = getAuth(firebaseApp);
   const handleLogout = async () => {
@@ -35,6 +36,7 @@ export default function HomePage() {
       console.error('ログアウト中にエラーが発生しました:', error);
     }
   };
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login'); // 未ログインの場合はログインページにリダイレクト
@@ -43,9 +45,19 @@ export default function HomePage() {
 
   useEffect(() => {
     if (user && !loading) {
-      fetchData(setAssets, setFamilies, setIncomes, setExpenses, setDebts).catch(console.error);
+      fetchData(setAssets, setFamilies, setIncomes, setExpenses, setDebts)
+        .catch(console.error)
+        .finally(() => setLoadingData(false));
     }
   }, [user, loading]);
+
+  if (loadingData || loading) {
+    return (
+      <Container>
+        <Loader />
+      </Container>
+    );
+  }
 
   return (
     <Container>

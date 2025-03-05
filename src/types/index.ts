@@ -7,12 +7,16 @@ export type Family = {
   name: string;
   birthDate: Date | null; // 生年月日 (YYYY-MM-DD形式)
   relation: string; // 関係 (例: 父, 母, 子供)
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 export type ApiFamily = {
   id?: string | null; // FirestoreのドキュメントID（更新時に使用）
   name: string;
   birthDate: string | Timestamp; // 生年月日 (YYYY-MM-DD形式)
   relation: string; // 関係 (例: 父, 母, 子供)
+  createdAt?: string | Timestamp; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
+  updatedAt?: string | Timestamp; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
 };
 
 export type Event = {
@@ -63,18 +67,19 @@ export type ApiExpense = {
   updatedAt?: string | Timestamp; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
 };
 
+export type AssetType = 'cash' | 'deposit' | 'real_estate' | 'stocks' | 'other';
 // ---------------------
 // 資産
 export type Asset = {
   id?: string;
-  type: 'cash' | 'deposit' | 'real_estate' | 'stocks' | 'other';
+  type: AssetType;
   details?: string;
   amount: number;
   createdAt?: Date;
   updatedAt?: Date;
 };
 export type ApiAsset = {
-  type: 'cash' | 'deposit' | 'real_estate' | 'stocks' | 'other';
+  type: AssetType;
   details?: string;
   amount: number;
   createdAt?: string | Timestamp; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
@@ -100,9 +105,9 @@ export type ApiDebt = {
   name: string; // 債務名（例: 住宅ローン）
   balance: number; // 残高
   interestRate: number; // 金利 (%)
-  dueDate: string; // 返済期日 (ISO8601形式の文字列)
+  dueDate: string | Timestamp; // 返済期日 (ISO8601形式の文字列)
   monthlyPayment: number; // 月額返済金額
-  recordedDate: string; // 登録時点の日付 (ISO8601形式の文字列)
+  recordedDate: string | Timestamp; // 登録時点の日付 (ISO8601形式の文字列)
   createdAt?: string | Timestamp; // データ作成日時 (ISO8601形式の文字列, Firestore自動生成)
   updatedAt?: string | Timestamp; // データ更新日時 (ISO8601形式の文字列, Firestore自動生成)
 };

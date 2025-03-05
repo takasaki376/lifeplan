@@ -47,8 +47,13 @@ export const useAsset = () => {
   const deleteAsset = async (id: string) => {
     setLoading(true);
     try {
-      const updatedAssets = await createDelete<Asset>('assets', id);
-      setAsset(updatedAssets.data);
+      const res = await createDelete<Asset>('assets', id);
+      if (res.status === 200) {
+        setAsset((prev) => prev.filter((asset) => asset.id !== id));
+      } else {
+        console.error(res);
+        setError('資産の削除に失敗しました');
+      }
     } catch (err) {
       console.error(err);
       setError('資産の削除に失敗しました');
@@ -56,5 +61,6 @@ export const useAsset = () => {
       setLoading(false);
     }
   };
+
   return { assets, addAsset, updateAsset, deleteAsset, loading, error };
 };
