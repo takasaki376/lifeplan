@@ -4,6 +4,8 @@ import { useState } from 'react';
 import {
   IconCalendar,
   IconCheck,
+  IconChevronDown,
+  IconChevronUp,
   IconCreditCard,
   IconCurrencyYen,
   IconEdit,
@@ -28,6 +30,7 @@ import {
   Group,
   MantineProvider,
   Paper,
+  ScrollArea,
   Select,
   Stack,
   Switch,
@@ -103,8 +106,19 @@ interface LifeEvent {
   estimatedCost: string;
 }
 
+interface LifePlanResult {
+  year: number;
+  age: number;
+  totalAssets: number;
+  totalIncome: number;
+  totalExpenses: number;
+  totalLoanBalance: number;
+}
+
 export default function LifePlanApp() {
   const [showInputForm, setShowInputForm] = useState(true);
+  const [lifePlanResults, setLifePlanResults] = useState<LifePlanResult[]>([]);
+  const [isCalculated, setIsCalculated] = useState(false);
 
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([
     { id: '1', name: '田中太郎', birthDate: '1988-05-15', relationship: '本人' },
@@ -163,6 +177,19 @@ export default function LifePlanApp() {
   const [editingPrepayment, setEditingPrepayment] = useState<string | null>(null);
   const [tempPrepaymentData, setTempPrepaymentData] = useState<Prepayment | null>(null);
 
+  // Accordionの開閉状態を管理
+  const [accordionValues, setAccordionValues] = useState<string[]>([
+    'family',
+    'incomes',
+    'expenses',
+    'investments',
+    'assets',
+    'loans',
+    'rate-changes',
+    'prepayments',
+    'events',
+  ]);
+
   // 年齢計算関数
   const calculateAge = (birthDate: string): number => {
     const today = new Date();
@@ -179,6 +206,126 @@ export default function LifePlanApp() {
   const getFamilyMemberName = (id: string): string => {
     const member = familyMembers.find((m) => m.id === id);
     return member ? member.name : '不明';
+  };
+
+  // ライフプラン計算関数
+  const calculateLifePlan = () => {
+    const mainPerson = familyMembers.find((member) => member.relationship === '本人');
+    if (!mainPerson || !mainPerson.birthDate) {
+      alert('本人の生年月日を入力してください');
+      return;
+    }
+
+    const currentAge = calculateAge(mainPerson.birthDate);
+    const maxAge = 100;
+    const results: LifePlanResult[] = [];
+
+    // 初期資産の計算
+    let currentAssets = assets.reduce(
+      (sum, asset) => sum + Number.parseFloat(asset.amount || '0'),
+      0
+    );
+
+    // 各年の計算
+    for (let age = currentAge; age <= maxAge; age++) {
+      const currentYear = new Date().getFullYear() + (age - currentAge);
+
+      // その年の収入計算
+      let yearlyIncome = 0;
+      familyMembers.forEach((member) => {
+        const memberAge = calculateAge(member.birthDate) + (age - currentAge);
+        incomes.forEach((income) => {
+          if (
+            income.familyMemberId === member.id &&
+            memberAge >= Number.parseInt(income.startAge) &&
+            memberAge <= Number.parseInt(income.endAge)
+          ) {
+            yearlyIncome += Number.parseFloat(income.monthlyIncome || '0') * 12;
+          }
+        });
+      });
+
+      // その年の支出計算
+      let yearlyExpenses = expenses.reduce(
+        (sum, expense) => sum + Number.parseFloat(expense.amount || '0') * 12,
+        0
+      );
+
+      // ライフイベント費用の計算
+      lifeEvents.forEach((event) => {
+        const eventYear = Number.parseInt(event.yearMonth.split('-')[0]);
+        if (eventYear === currentYear) {
+          yearlyExpenses += Number.parseFloat(event.estimatedCost || '0');
+        }
+      });
+
+      // ローン残高の計算
+      let totalLoanBalance = 0;
+      loans.forEach((loan) => {
+        const completionYear = Number.parseInt(loan.completionYearMonth.split('-')[0]);
+        if (currentYear <= completionYear) {
+          // 簡略化：毎年の返済額を考慮した残高計算
+          const yearsFromStart = currentYear - new Date().getFullYear();
+          const annualPayment = Number.parseFloat(loan.monthlyPayment || '0') * 12;
+          const remainingBalance = Math.max(
+            0,
+            Number.parseFloat(loan.balance || '0') - annualPayment * yearsFromStart
+          );
+          totalLoanBalance += remainingBalance;
+        }
+      });
+
+      // 投資運用益の計算
+      let investmentGains = 0;
+      investments.forEach((investment) => {
+        const annualReturn =
+          (Number.parseFloat(investment.expectedReturn || '0') / 100) *
+          Number.parseFloat(investment.amount || '0');
+        investmentGains += annualReturn;
+      });
+
+      // 年間収支の計算
+      const annualCashFlow = yearlyIncome - yearlyExpenses;
+
+      // 総資産の更新
+      currentAssets = currentAssets + annualCashFlow + investmentGains;
+
+      results.push({
+        year: currentYear,
+        age,
+        totalAssets: Math.round(currentAssets),
+        totalIncome: Math.round(yearlyIncome),
+        totalExpenses: Math.round(yearlyExpenses),
+        totalLoanBalance: Math.round(totalLoanBalance),
+      });
+    }
+
+    setLifePlanResults(results);
+    setIsCalculated(true);
+  };
+
+  // 数値のフォーマット関数
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString();
+  };
+
+  // Accordion一括操作
+  const openAllAccordions = () => {
+    setAccordionValues([
+      'family',
+      'incomes',
+      'expenses',
+      'investments',
+      'assets',
+      'loans',
+      'rate-changes',
+      'prepayments',
+      'events',
+    ]);
+  };
+
+  const closeAllAccordions = () => {
+    setAccordionValues([]);
   };
 
   // 家族構成の操作
@@ -575,20 +722,25 @@ export default function LifePlanApp() {
               {showInputForm && (
                 <Grid.Col span={{ base: 12, lg: 6 }}>
                   <Paper shadow="sm" p="lg" radius="md">
-                    <Accordion
-                      multiple
-                      defaultValue={[
-                        'family',
-                        'incomes',
-                        'expenses',
-                        'investments',
-                        'assets',
-                        'loans',
-                        'rate-changes',
-                        'prepayments',
-                        'events',
-                      ]}
-                    >
+                    <Group mb="md" justify="flex-end">
+                      <Button
+                        variant="subtle"
+                        size="xs"
+                        leftSection={<IconChevronDown size={14} />}
+                        onClick={openAllAccordions}
+                      >
+                        全て開く
+                      </Button>
+                      <Button
+                        variant="subtle"
+                        size="xs"
+                        leftSection={<IconChevronUp size={14} />}
+                        onClick={closeAllAccordions}
+                      >
+                        全て閉じる
+                      </Button>
+                    </Group>
+                    <Accordion multiple value={accordionValues} onChange={setAccordionValues}>
                       {/* 家族構成 */}
                       <Accordion.Item value="family">
                         <Accordion.Control icon={<IconUsers size={20} />}>
@@ -1815,7 +1967,11 @@ export default function LifePlanApp() {
                     </Accordion>
 
                     <Group mt="xl">
-                      <Button leftSection={<IconCalendar size={16} />} style={{ flex: 1 }}>
+                      <Button
+                        leftSection={<IconCalendar size={16} />}
+                        style={{ flex: 1 }}
+                        onClick={calculateLifePlan}
+                      >
                         ライフプランを計算
                       </Button>
                       <Button variant="outline">データを保存</Button>
@@ -1830,31 +1986,80 @@ export default function LifePlanApp() {
                   <Group mb="md">
                     <Title order={3}>ライフプラン結果</Title>
                   </Group>
-                  <Text size="sm" c="dimmed" mb="lg">
-                    入力された情報を基に、将来の資金計画を表示します
-                  </Text>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      height: showInputForm ? '300px' : '600px',
-                      color: '#868e96',
-                    }}
-                  >
-                    <Stack align="center" gap="md">
-                      <IconCalendar size={48} style={{ opacity: 0.5 }} />
-                      <div style={{ textAlign: 'center' }}>
-                        <Text>左側のフォームに情報を入力して</Text>
-                        <Text>「ライフプランを計算」ボタンを押してください</Text>
-                        {!showInputForm && (
-                          <Text mt="md" size="sm" c="dimmed">
-                            入力フォームを表示するには、上部のスイッチをオンにしてください
-                          </Text>
-                        )}
+                  {!isCalculated ? (
+                    <>
+                      <Text size="sm" c="dimmed" mb="lg">
+                        入力された情報を基に、将来の資金計画を表示します
+                      </Text>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: showInputForm ? '300px' : '600px',
+                          color: '#868e96',
+                        }}
+                      >
+                        <Stack align="center" gap="md">
+                          <IconCalendar size={48} style={{ opacity: 0.5 }} />
+                          <div style={{ textAlign: 'center' }}>
+                            <Text>左側のフォームに情報を入力して</Text>
+                            <Text>「ライフプランを計算」ボタンを押してください</Text>
+                            {!showInputForm && (
+                              <Text mt="md" size="sm" c="dimmed">
+                                入力フォームを表示するには、上部のスイッチをオンにしてください
+                              </Text>
+                            )}
+                          </div>
+                        </Stack>
                       </div>
-                    </Stack>
-                  </div>
+                    </>
+                  ) : (
+                    <>
+                      <Text size="sm" c="dimmed" mb="lg">
+                        年齢別のライフプラン推移（単位：万円）
+                      </Text>
+                      <ScrollArea h={showInputForm ? 400 : 600}>
+                        <Table striped highlightOnHover>
+                          <Table.Thead>
+                            <Table.Tr>
+                              <Table.Th>年</Table.Th>
+                              <Table.Th>年齢</Table.Th>
+                              <Table.Th style={{ textAlign: 'right' }}>総資産</Table.Th>
+                              <Table.Th style={{ textAlign: 'right' }}>年収入</Table.Th>
+                              <Table.Th style={{ textAlign: 'right' }}>年支出</Table.Th>
+                              <Table.Th style={{ textAlign: 'right' }}>ローン残高</Table.Th>
+                            </Table.Tr>
+                          </Table.Thead>
+                          <Table.Tbody>
+                            {lifePlanResults.map((result) => (
+                              <Table.Tr key={result.year}>
+                                <Table.Td>{result.year}</Table.Td>
+                                <Table.Td>{result.age}歳</Table.Td>
+                                <Table.Td
+                                  style={{
+                                    textAlign: 'right',
+                                    color: result.totalAssets < 0 ? 'red' : 'inherit',
+                                  }}
+                                >
+                                  {formatNumber(result.totalAssets)}
+                                </Table.Td>
+                                <Table.Td style={{ textAlign: 'right' }}>
+                                  {formatNumber(result.totalIncome)}
+                                </Table.Td>
+                                <Table.Td style={{ textAlign: 'right' }}>
+                                  {formatNumber(result.totalExpenses)}
+                                </Table.Td>
+                                <Table.Td style={{ textAlign: 'right' }}>
+                                  {formatNumber(result.totalLoanBalance)}
+                                </Table.Td>
+                              </Table.Tr>
+                            ))}
+                          </Table.Tbody>
+                        </Table>
+                      </ScrollArea>
+                    </>
+                  )}
                 </Paper>
               </Grid.Col>
             </Grid>
