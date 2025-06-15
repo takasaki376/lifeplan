@@ -31,10 +31,14 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
           cache-dependency-path: '**/yarn.lock'
-      - name: Firebase Deploy
+      - name: Firebase ProjectId
         env:
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+      - name: Firebase Email
+        env:
           FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+      - name: Firebase KeyKey
+        env:
           FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
       - name: Install dependencies
         run: yarn
