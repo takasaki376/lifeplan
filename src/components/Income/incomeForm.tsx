@@ -122,7 +122,7 @@ export function IncomeForm() {
         />
         <TextInput
           label="終了年齢"
-          placeholder="例: 60"
+          placeholder="例: 100"
           type="number"
           value={endAge}
           onChange={(e) => setEndAge(Number(e.target.value))}
