@@ -26,7 +26,7 @@ const categories = [
 
 export const ExpenseForm = () => {
   const [date, setDate] = useState<Date | null>(new Date());
-  const [alartMes, setalartMes] = useState('');
+  const [alertMes, setAlertMes] = useState('');
   const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
 
   const [amounts, setAmounts] = useState<Expense['categories']>(
@@ -39,7 +39,7 @@ export const ExpenseForm = () => {
     e.preventDefault();
 
     if (!date) {
-      setalartMes('日付を選択してください。');
+      setAlertMes('日付を選択してください。');
       return;
     }
 
@@ -94,9 +94,9 @@ export const ExpenseForm = () => {
           </Button>
         </Group>
       </form>
-      {alartMes && (
-        <Notification icon={xIcon} color="red" title="入力エラー!" onClose={() => setalartMes('')}>
-          {alartMes}
+      {alertMes && (
+        <Notification icon={xIcon} color="red" title="入力エラー!" onClose={() => setAlertMes('')}>
+          {alertMes}
         </Notification>
       )}
     </>

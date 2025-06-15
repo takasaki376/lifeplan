@@ -25,7 +25,7 @@ export function IncomeForm() {
   const [income, setIncome] = useState<number | undefined>(undefined);
   const [startAge, setStartAge] = useState<number | undefined>(undefined);
   const [endAge, setEndAge] = useState<number | undefined>(undefined);
-  const [alartMes, setalartMes] = useState('');
+  const [alertMes, setAlertMes] = useState('');
   const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
   const { addIncome } = useIncome();
   const { family } = useFamily();
@@ -64,12 +64,12 @@ export function IncomeForm() {
       endAge === undefined ||
       endAge < 0
     ) {
-      setalartMes('すべての項目を正しく入力してください');
+      setAlertMes('すべての項目を正しく入力してください');
       return;
     }
 
     if (startAge > endAge) {
-      setalartMes('開始年齢は終了年齢より小さい値を入力してください');
+      setAlertMes('開始年齢は終了年齢より小さい値を入力してください');
       return;
     }
 
@@ -168,9 +168,9 @@ export function IncomeForm() {
           保存
         </Button>
       </form>
-      {alartMes && (
-        <Notification icon={xIcon} color="red" title="入力エラー!" onClose={() => setalartMes('')}>
-          {alartMes}
+      {alertMes && (
+        <Notification icon={xIcon} color="red" title="入力エラー!" onClose={() => setAlertMes('')}>
+          {alertMes}
         </Notification>
       )}
     </>
