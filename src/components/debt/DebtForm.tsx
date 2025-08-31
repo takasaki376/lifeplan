@@ -27,7 +27,7 @@ const initDebt = {
 
 export default function DebtForm() {
   // const [date, setDate] = useState<Date | null>(new Date());
-  const [alartMes, setalartMes] = useState('');
+  const [alertMes, setAlertMes] = useState('');
   const [form, setForm] = useState<Debt>(initDebt);
   const { addDebt } = useDebt();
 
@@ -38,11 +38,11 @@ export default function DebtForm() {
 
   const handleSubmit = async () => {
     if (!form.recordedDate) {
-      setalartMes('日付を選択してください。');
+      setAlertMes('日付を選択してください。');
       return;
     }
     if (!form.dueDate) {
-      setalartMes('返済期日を選択してください。');
+      setAlertMes('返済期日を選択してください。');
       return;
     }
 
@@ -111,9 +111,9 @@ export default function DebtForm() {
 
         <Button onClick={handleSubmit}>追加</Button>
       </div>
-      {alartMes && (
-        <Notification icon={xIcon} color="red" title="入力エラー!" onClose={() => setalartMes('')}>
-          {alartMes}
+      {alertMes && (
+        <Notification icon={xIcon} color="red" title="入力エラー!" onClose={() => setAlertMes('')}>
+          {alertMes}
         </Notification>
       )}
     </div>

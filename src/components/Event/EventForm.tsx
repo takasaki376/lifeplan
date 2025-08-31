@@ -23,13 +23,13 @@ const EventForm: FC<EventFormProps> = ({ onAddEvent }) => {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState<Date | null>(null);
   const [cost, setCost] = useState<string | number>(0);
-  const [alartMes, setalartMes] = useState('');
+  const [alertMes, setAlertMes] = useState('');
   const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!title || !date) {
-      setalartMes('すべての必須項目を入力してください。');
+      setAlertMes('すべての必須項目を入力してください。');
 
       return;
     }
@@ -73,14 +73,14 @@ const EventForm: FC<EventFormProps> = ({ onAddEvent }) => {
             追加
           </Button>
         </Group>
-        {alartMes && (
+        {alertMes && (
           <Notification
             icon={xIcon}
             color="red"
             title="入力エラー!"
-            onClose={() => setalartMes('')}
+            onClose={() => setAlertMes('')}
           >
-            {alartMes}
+            {alertMes}
           </Notification>
         )}
       </form>
