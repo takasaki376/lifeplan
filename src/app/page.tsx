@@ -251,8 +251,8 @@ export default function LifePlanApp() {
         incomes.forEach((income) => {
           if (
             income.familyMemberId === member.id &&
-            memberAge >= Number.parseInt(income.startAge) &&
-            memberAge <= Number.parseInt(income.endAge)
+            memberAge >= Number.parseInt(income.startAge, 10) &&
+            memberAge <= Number.parseInt(income.endAge, 10)
           ) {
             yearlyIncome += Number.parseFloat(income.monthlyIncome || '0') * 12;
           }
@@ -267,7 +267,7 @@ export default function LifePlanApp() {
 
       // ライフイベント費用の計算
       lifeEvents.forEach((event) => {
-        const eventYear = Number.parseInt(event.yearMonth.split('-')[0]);
+        const eventYear = Number.parseInt(event.yearMonth.split('-')[0], 10);
         if (eventYear === currentYear) {
           yearlyExpenses += Number.parseFloat(event.estimatedCost || '0');
         }
@@ -276,7 +276,7 @@ export default function LifePlanApp() {
       // ローン残高の計算
       let totalLoanBalance = 0;
       loans.forEach((loan) => {
-        const completionYear = Number.parseInt(loan.completionYearMonth.split('-')[0]);
+        const completionYear = Number.parseInt(loan.completionYearMonth.split('-')[0], 10);
         if (currentYear <= completionYear) {
           // 簡略化：毎年の返済額を考慮した残高計算
           const yearsFromStart = currentYear - new Date().getFullYear();
