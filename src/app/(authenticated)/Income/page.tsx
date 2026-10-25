@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Drawer } from '@mantine/core';
 import { Header } from '@/src/components/common/Header';
-import { IncomeForm } from '@/src/components/Income/IncomeForm';
+import { IncomeForm } from '@/src/components/Income/incomeForm';
 import { IncomeList } from '@/src/components/Income/IncomeList';
 import { useAuth } from '@/src/hooks/useAuth';
 

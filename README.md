@@ -3,6 +3,39 @@
 This is a template for [Next.js](https://nextjs.org/) app router + [Mantine](https://mantine.dev/).
 If you want to use pages router instead, see [next-pages-template](https://github.com/mantinedev/next-pages-template).
 
+## 開発環境（更新後）
+
+- Node.js: `24.22.1`（`.nvmrc`）
+- Next.js: `16.4.3`
+- Yarn: `4.5.3`（リポジトリ同梱）
+
+```sh
+nvm use
+node .yarn/releases/yarn-4.5.3.cjs install --immutable
+npm run dev
+```
+
+Next.js の開発・本番ビルドには、既存の bundle analyzer と互換性のある Webpack を使用します。
+Storybook は Next.js 16 対応の Vite 構成です。`npm run storybook:build` でビルドできます。
+
+Firebase を使うページと API には、`NEXT_PUBLIC_FIREBASE_API_KEY`、
+`NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`、`NEXT_PUBLIC_FIREBASE_PROJECT_ID`、
+`NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`、`NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`、
+`NEXT_PUBLIC_FIREBASE_APP_ID`、`FIREBASE_PROJECT_ID`、`FIREBASE_CLIENT_EMAIL`、
+`FIREBASE_PRIVATE_KEY` が必要です。環境変数または Git 管理対象外の `.env.local` に設定してください。
+管理用秘密鍵はプロセスから読める実際の値が必要です。チャットや Git に記録しないでください。
+設定がないと本番ビルドのページデータ収集も失敗します。
+
+脆弱性対策として Firebase / Firebase Admin、Jotai Devtools、Storybook、Jest と間接依存を更新しています。
+Firebase Admin は v14 のモジュール API に移行しました。
+`resolutions` の gRPC と Tailwind CSS 用 selector parser は、親パッケージが指定する古い版を
+セキュリティ修正版へ置き換えます。親パッケージが対応したら固定指定を見直してください。
+
+検証コマンドは `npm run typecheck`、`npm run jest -- --runInBand`、
+`npm run lint`、`npm run prettier:check`、`npm run build` です。
+`npm run jest` はトップページの表示と初期値によるライフプラン計算を検証します。
+既存の `src/app/page.tsx` には ESLint の `no-alert` / `radix` エラーが残っています。
+
 ## Features
 
 This template comes with the following features:

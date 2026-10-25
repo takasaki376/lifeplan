@@ -131,3 +131,6 @@ dist
 
 .DS_Store
 .env.local
+
+# Storybook production output
+storybook-static/
